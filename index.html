@@ -1,0 +1,2082 @@
+
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>نظام المكتب العلمي - إدارة المبيعات والمعرض</title>
+    
+    <!-- PWA Web App Manifest -->
+    <link rel="manifest" href="data:application/manifest+json;utf8,%7B%22name%22%3A%22%D9%86%D8%B8%D8%A7%D9%85%20%D8%A7%D9%84%D9%85%D9%83%D8%AA%D8%A8%20%D8%A7%D9%84%D8%B9%D9%84%D9%85%D9%8A%22%2C%22short_name%22%3A%22%D8%A7%D9%84%D9%85%D9%83%D8%AA%D8%A8%20%D8%A7%D9%84%D8%B9%D9%84%D9%85%D9%8A%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%230f172a%22%2C%22theme_color%22%3A%22%230284c7%22%7D">
+    <meta name="theme-color" content="#0284c7">
+
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Cairo', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: #0f172a;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .app-container {
+            width: 100%;
+            max-width: 450px;
+            height: 100vh;
+            max-height: 100dvh;
+            background-color: #f8fafc;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+            overflow: hidden;
+        }
+
+        @media (min-width: 480px) {
+            .app-container {
+                height: 92vh;
+                max-height: 932px;
+                border-radius: 24px;
+                border: 6px solid #1e293b;
+            }
+        }
+
+        /* --- شريط حالة الاتصال الأوفلاين --- */
+        .network-banner {
+            background-color: #ef4444;
+            color: #ffffff;
+            font-size: 10px;
+            font-weight: 700;
+            text-align: center;
+            padding: 4px 8px;
+            display: none;
+            z-index: 400;
+        }
+        .network-banner.offline {
+            display: block;
+        }
+
+        /* --- شاشة تسجيل الدخول --- */
+        .login-screen {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: #0f172a;
+            z-index: 200;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            color: #fff;
+            overflow-y: auto;
+        }
+
+        .login-card {
+            background: #1e293b;
+            width: 100%;
+            max-width: 380px;
+            padding: 24px 20px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+            border: 1px solid #334155;
+            text-align: center;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .login-logo {
+            font-size: 38px;
+            color: #38bdf8;
+            margin-bottom: 8px;
+        }
+
+        .login-title {
+            font-size: 18px;
+            font-weight: 800;
+            margin-bottom: 4px;
+            color: #f8fafc;
+        }
+
+        .login-subtitle {
+            font-size: 11px;
+            color: #94a3b8;
+            margin-bottom: 18px;
+        }
+
+        .tab-switch {
+            display: flex;
+            background: #0f172a;
+            border-radius: 10px;
+            padding: 4px;
+            margin-bottom: 16px;
+            gap: 4px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 8px 4px;
+            border: none;
+            background: transparent;
+            color: #94a3b8;
+            font-size: 12px;
+            font-weight: 700;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .tab-btn.active {
+            background: #0284c7;
+            color: white;
+        }
+
+        .login-form {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            text-align: right;
+        }
+
+        .login-form label {
+            font-size: 11px;
+            color: #cbd5e1;
+            font-weight: 700;
+        }
+
+        /* --- شريط الأخبار والواجهة الرئيسية --- */
+        .news-ticker {
+            background-color: #dc2626;
+            color: #ffffff;
+            padding: 6px 0;
+            overflow: hidden;
+            white-space: nowrap;
+            font-size: 11px;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .ticker-text {
+            display: inline-block;
+            padding-right: 100%;
+            animation: ticker 18s linear infinite;
+        }
+
+        @keyframes ticker {
+            0% { transform: translate3d(0, 0, 0); }
+            100% { transform: translate3d(100%, 0, 0); }
+        }
+
+        .role-switcher {
+            background: #0f172a;
+            color: #fff;
+            padding: 8px 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 11px;
+            flex-shrink: 0;
+        }
+
+        .logout-btn {
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 4px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 11px;
+        }
+
+        .header {
+            background-color: #0284c7;
+            color: #ffffff;
+            padding: 12px 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .header-title {
+            font-size: 14px;
+            font-weight: 700;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .cart-icon-btn {
+            position: relative;
+            cursor: pointer;
+            font-size: 18px;
+            padding: 2px 6px;
+        }
+
+        .badge {
+            position: absolute;
+            top: -4px;
+            left: -6px;
+            background-color: #ef4444;
+            color: white;
+            font-size: 9px;
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-weight: 800;
+            border: 2px solid #0284c7;
+        }
+
+        .filter-section {
+            background: #fff;
+            padding: 8px 10px;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            flex-shrink: 0;
+        }
+
+        .select-group {
+            display: flex;
+            gap: 6px;
+        }
+
+        .custom-select, .form-input {
+            flex: 1;
+            min-width: 0;
+            padding: 8px 10px;
+            font-size: 11px;
+            border-radius: 8px;
+            border: 1px solid #cbd5e1;
+            background: #f8fafc;
+            outline: none;
+            font-weight: 600;
+            width: 100%;
+            color: #0f172a;
+        }
+
+        .custom-select:focus, .form-input:focus {
+            border-color: #0284c7;
+            background: #fff;
+        }
+
+        .content {
+            flex: 1;
+            padding: 10px;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .product-card {
+            background: #ffffff;
+            border-radius: 14px;
+            padding: 12px;
+            margin-bottom: 12px;
+            border: 1px solid #e2e8f0;
+            display: flex;
+            gap: 12px;
+            position: relative;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .product-card:active {
+            transform: scale(0.99);
+        }
+
+        .bonus-tag {
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            background: #16a34a;
+            color: #fff;
+            font-size: 9px;
+            font-weight: 700;
+            padding: 3px 8px;
+            border-radius: 6px;
+            z-index: 2;
+            box-shadow: 0 2px 4px rgba(22,163,74,0.3);
+        }
+
+        .product-img {
+            width: 85px;
+            height: 85px;
+            object-fit: cover;
+            border-radius: 10px;
+            border: 1px solid #e2e8f0;
+            background: #f8fafc;
+            cursor: pointer;
+            flex-shrink: 0;
+            transition: opacity 0.2s;
+        }
+
+        .product-img:hover {
+            opacity: 0.9;
+        }
+
+        .product-info {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .product-name {
+            font-size: 13.5px;
+            font-weight: 800;
+            color: #0f172a;
+            word-break: break-word;
+            line-height: 1.3;
+        }
+
+        .company-badge {
+            color: #0284c7;
+            font-size: 10px;
+            font-weight: 700;
+            margin-top: 2px;
+        }
+
+        .product-meta {
+            font-size: 10px;
+            color: #64748b;
+            margin-top: 2px;
+        }
+
+        .price-box {
+            font-size: 11.5px;
+            color: #059669;
+            font-weight: 800;
+            margin-top: 4px;
+        }
+
+        .action-row {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+            margin-top: 8px;
+            flex-wrap: wrap;
+        }
+
+        .unit-qty-input {
+            width: 52px;
+            padding: 6px 4px;
+            font-size: 11px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            text-align: center;
+            font-weight: 700;
+            background: #f8fafc;
+        }
+
+        .btn-add {
+            background-color: #0284c7;
+            color: white;
+            border: none;
+            padding: 7px 12px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 700;
+            cursor: pointer;
+            flex: 1;
+            min-width: 90px;
+            text-align: center;
+            transition: background 0.2s;
+        }
+
+        .btn-add:active {
+            background-color: #0369a1;
+        }
+
+        .admin-panel {
+            display: none;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .admin-card {
+            background: #fff;
+            padding: 12px;
+            border-radius: 10px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .admin-card h4 {
+            font-size: 12px;
+            margin-bottom: 8px;
+            color: #0f172a;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* --- شبكة لوحة مؤشرات الأداء KPIs --- */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .kpi-card {
+            background: #f8fafc;
+            border: 1px solid #cbd5e1;
+            padding: 10px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .kpi-card .val {
+            font-size: 15px;
+            font-weight: 800;
+            color: #0284c7;
+        }
+
+        .kpi-card .lbl {
+            font-size: 9.5px;
+            color: #64748b;
+            font-weight: 700;
+        }
+
+        .file-upload-btn {
+            display: block;
+            width: 100%;
+            padding: 8px;
+            background: #f1f5f9;
+            border: 1px dashed #0284c7;
+            color: #0284c7;
+            text-align: center;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-bottom: 8px;
+        }
+
+        .btn-submit {
+            width: 100%;
+            background: #16a34a;
+            color: white;
+            border: none;
+            padding: 8px;
+            border-radius: 6px;
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 11px;
+            text-align: center;
+        }
+
+        .btn-submit:active {
+            opacity: 0.9;
+        }
+
+        .btn-edit-item {
+            background: #f59e0b;
+            color: white;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .btn-delete-item {
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .table-responsive {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .report-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 6px;
+            min-width: 280px;
+        }
+
+        .report-table th, .report-table td {
+            border: 1px solid #e2e8f0;
+            padding: 6px 4px;
+            font-size: 10px;
+            text-align: center;
+        }
+
+        .report-table th {
+            background: #f1f5f9;
+            color: #334155;
+        }
+
+        .modal {
+            display: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.75);
+            backdrop-filter: blur(2px);
+            z-index: 150;
+            justify-content: center;
+            align-items: center;
+            padding: 12px;
+        }
+
+        .image-viewer-modal {
+            display: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.95);
+            z-index: 300;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 12px;
+        }
+
+        .gallery-header {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #fff;
+            padding: 4px 8px;
+        }
+
+        .gallery-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: #38bdf8;
+        }
+
+        .close-gallery-btn {
+            background: rgba(255,255,255,0.1);
+            border: none;
+            color: #fff;
+            font-size: 18px;
+            cursor: pointer;
+            padding: 6px 12px;
+            border-radius: 50%;
+        }
+
+        .gallery-main {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            flex: 1;
+            gap: 8px;
+        }
+
+        .gallery-img-container {
+            flex: 1;
+            max-height: 65vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .gallery-img {
+            max-width: 100%;
+            max-height: 52vh;
+            border-radius: 12px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.5);
+            object-fit: contain;
+            border: 1px solid #334155;
+        }
+
+        .gallery-caption {
+            color: #cbd5e1;
+            font-size: 11px;
+            margin-top: 12px;
+            text-align: center;
+            background: rgba(30, 41, 59, 0.8);
+            padding: 6px 12px;
+            border-radius: 8px;
+            width: 100%;
+        }
+
+        .nav-arrow-btn {
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: background 0.2s;
+        }
+
+        .nav-arrow-btn:active {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .invoice-box {
+            background: white;
+            width: 100%;
+            max-width: 420px;
+            max-height: 90vh;
+            border-radius: 16px;
+            padding: 14px;
+            overflow-y: auto;
+            font-size: 11px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+
+        .styled-invoice {
+            border: 2px solid #0284c7;
+            border-radius: 8px;
+            padding: 10px;
+            background: #ffffff;
+        }
+
+        .inv-head-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #0284c7;
+            padding-bottom: 8px;
+            margin-bottom: 8px;
+        }
+
+        .inv-brand h2 {
+            color: #0284c7;
+            font-size: 15px;
+            font-weight: 800;
+        }
+
+        .inv-brand p {
+            font-size: 8px;
+            color: #64748b;
+        }
+
+        .inv-details-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4px 8px;
+            background: #f8fafc;
+            padding: 8px;
+            border-radius: 6px;
+            margin-bottom: 8px;
+            font-size: 9.5px;
+        }
+
+        .inv-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 8px;
+        }
+
+        .inv-table th {
+            background: #0284c7;
+            color: white;
+            padding: 5px 2px;
+            font-size: 9.5px;
+        }
+
+        .inv-table td {
+            border-bottom: 1px solid #e2e8f0;
+            padding: 5px 2px;
+            text-align: center;
+            font-size: 9.5px;
+        }
+
+        .inv-total-box {
+            background: #0f172a;
+            color: white;
+            padding: 8px 10px;
+            border-radius: 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .bottom-nav {
+            height: 56px;
+            background-color: #ffffff;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            flex-shrink: 0;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.03);
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #64748b;
+            font-size: 10px;
+            cursor: pointer;
+            flex: 1;
+            padding: 6px 0;
+            transition: color 0.2s;
+        }
+
+        .nav-item.active {
+            color: #0284c7;
+            font-weight: 700;
+        }
+
+        .nav-item i {
+            font-size: 17px;
+            margin-bottom: 2px;
+        }
+
+        @media print {
+            body * { visibility: hidden; }
+            #printableInvoice, #printableInvoice * { visibility: visible; }
+            #printableInvoice {
+                position: absolute;
+                left: 0; top: 0;
+                width: 100%; border: none;
+            }
+            .modal { position: absolute; background: none; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        
+        <!-- شريط حالة الاتصال -->
+        <div class="network-banner" id="networkBanner">
+            <i class="fa-solid fa-wifi"></i> وضع أوفلاين: يتم حفظ وتصفح المبيعات محلياً
+        </div>
+        
+        <!-- شاشة تسجيل الدخول -->
+        <div class="login-screen" id="loginScreen">
+            <div class="login-card">
+                <div class="login-logo"><i class="fa-solid fa-hospital-user"></i></div>
+                <div class="login-title" id="loginOfficeTitle">المكتب العلمي للأدوية</div>
+                <div class="login-subtitle">نظام إدارة الطلبيات والمبيعات الميدانية</div>
+
+                <div class="tab-switch">
+                    <button class="tab-btn active" id="tabRepBtn" onclick="switchLoginTab('REP')">دخول مندوب</button>
+                    <button class="tab-btn" id="tabAdminBtn" onclick="switchLoginTab('ADMIN')">دخول المدير العام</button>
+                </div>
+
+                <!-- نموذج دخول المندوب -->
+                <div class="login-form" id="repLoginForm">
+                    <label>اسم المندوب:</label>
+                    <input type="text" id="loginRepNameInput" class="form-input" placeholder="اكتب اسم المندوب..." style="background:#0f172a; color:#fff; border-color:#334155;">
+                    <button class="btn-submit" style="background:#0284c7; margin-top:6px; padding:10px;" onclick="loginAsRep()">تسجيل الدخول والتطبيق</button>
+                </div>
+
+                <!-- نموذج دخول المدير -->
+                <div class="login-form" id="adminLoginForm" style="display:none;">
+                    <label>رمز مرور لوحة التحكم:</label>
+                    <input type="password" id="adminPasswordInput" class="form-input" placeholder="ادخل كلمة المرور..." style="background:#0f172a; color:#fff; border-color:#334155;">
+                    <button class="btn-submit" style="background:#16a34a; margin-top:6px; padding:10px;" onclick="loginAsAdmin()">دخول لوحة الإدارة</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="news-ticker">
+            <div class="ticker-text" id="tickerDisplay">
+                📢 نظام المبيعات المطور للمكتب العلمي | بونص أسبوعي خاص | تسجيل ومتابعة مبيعات المندوبين شهرياً.
+            </div>
+        </div>
+
+        <div class="role-switcher">
+            <span id="roleLabel">المستخدم: <b>غير مسجل</b></span>
+            <button class="logout-btn" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> خروج</button>
+        </div>
+
+        <header class="header">
+            <div class="header-title" id="appHeaderTitle">المكتب العلمي - معرض الأدوية</div>
+            <div class="cart-icon-btn" onclick="openCart()">
+                <i class="fa-solid fa-file-invoice-dollar"></i>
+                <span class="badge" id="cartBadge">0</span>
+            </div>
+        </header>
+
+        <div class="filter-section" id="filterSection">
+            <div class="select-group">
+                <input type="text" id="searchInput" class="form-input" placeholder="🔍 بحث عن دواء أو شركة..." oninput="filterProducts()">
+            </div>
+            <div class="select-group">
+                <select class="custom-select" id="provinceSelect" onchange="loadWarehouses()">
+                    <option value="">المحافظة...</option>
+                </select>
+                <select class="custom-select" id="warehouseSelect">
+                    <option value="">اختر المذخر المورد...</option>
+                </select>
+            </div>
+
+            <div class="select-group">
+                <select class="custom-select" id="companySelect" onchange="filterProducts()">
+                    <option value="ALL">جميع الشركات</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- معروض الأيتمات بالصور (للمدير والمندوب) -->
+        <main class="content" id="repView">
+            <div id="productList"></div>
+        </main>
+
+        <main class="content admin-panel" id="adminView">
+            <!-- كروت المؤشرات والتنفيذ KPIs -->
+            <div class="kpi-grid">
+                <div class="kpi-card">
+                    <div class="val" id="kpiTotalSales">0 د.ع</div>
+                    <div class="lbl">إجمالي المبيعات</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="val" id="kpiTotalOrders">0</div>
+                    <div class="lbl">إجمالي الطلبات</div>
+                </div>
+            </div>
+
+            <!-- إدارة وتعديل الأدوية المضافة -->
+            <div class="admin-card">
+                <h4><i class="fa-solid fa-boxes-stacked"></i> قائمة الأدوية المضافة (إدارة وتعديل)</h4>
+                <div class="table-responsive">
+                    <table class="report-table">
+                        <thead>
+                            <tr>
+                                <th>اسم الدواء</th>
+                                <th>الشركة</th>
+                                <th>السعر</th>
+                                <th>البونص</th>
+                                <th>إجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody id="adminProductsTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- إدارة المندوبين -->
+            <div class="admin-card">
+                <h4><i class="fa-solid fa-users"></i> إدارة قائمة المندوبين المسجلين</h4>
+                <div class="table-responsive">
+                    <table class="report-table">
+                        <thead>
+                            <tr>
+                                <th>اسم المندوب</th>
+                                <th>المحافظة</th>
+                                <th>حذف</th>
+                            </tr>
+                        </thead>
+                        <tbody id="adminRepsTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- إدارة المذاخر -->
+            <div class="admin-card">
+                <h4><i class="fa-solid fa-warehouse"></i> إدارة قائمة المذاخر المضافة</h4>
+                <div class="table-responsive">
+                    <table class="report-table">
+                        <thead>
+                            <tr>
+                                <th>المحافظة</th>
+                                <th>اسم المذخر</th>
+                                <th>حذف</th>
+                            </tr>
+                        </thead>
+                        <tbody id="adminWarehousesTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- إعدادات Firebase -->
+            <div class="admin-card">
+                <h4><i class="fa-solid fa-database"></i> إعدادات قاعدة البيانات Firebase (Online)</h4>
+                <input type="text" id="fbApiKey" class="form-input" placeholder="apiKey" style="margin-bottom:6px;">
+                <input type="text" id="fbAuthDomain" class="form-input" placeholder="authDomain" style="margin-bottom:6px;">
+                <input type="text" id="fbDatabaseURL" class="form-input" placeholder="databaseURL" style="margin-bottom:6px;">
+                <input type="text" id="fbProjectId" class="form-input" placeholder="projectId" style="margin-bottom:6px;">
+                <input type="text" id="fbStorageBucket" class="form-input" placeholder="storageBucket" style="margin-bottom:6px;">
+                <input type="text" id="fbMessagingSenderId" class="form-input" placeholder="messagingSenderId" style="margin-bottom:6px;">
+                <input type="text" id="fbAppId" class="form-input" placeholder="appId" style="margin-bottom:6px;">
+                <button class="btn-submit" style="background:#0284c7;" onclick="saveFirebaseConfig()">حفظ والربط مع Firebase</button>
+            </div>
+
+            <!-- تغيير اسم المكتب -->
+            <div class="admin-card">
+                <h4><i class="fa-solid fa-hospital-user"></i> تغيير اسم المكتب العلمي</h4>
+                <input type="text" id="officeNameInput" class="form-input" placeholder="ادخل اسم المكتب العلمي جديد..." style="margin-bottom:6px;">
+                <button class="btn-submit" onclick="updateOfficeName()">حفظ اسم المكتب</button>
+            </div>
+
+            <!-- تغيير رمز مرور المدير -->
+            <div class="admin-card">
+                <h4><i class="fa-solid fa-key"></i> تغيير رمز مرور المدير</h4>
+                <input type="password" id="newAdminPassword" class="form-input" placeholder="رمز المرور الجديد..." style="margin-bottom:6px;">
+                <button class="btn-submit" onclick="updateAdminPassword()">حفظ الرمز الجديد</button>
+            </div>
+
+            <div class="admin-card">
+                <h4><i class="fa-solid fa-bullhorn"></i> إدارة شريط الإعلانات المتحرك</h4>
+                <input type="text" id="newsInput" class="form-input" placeholder="اكتب نص الإعلان الذي يظهر أعلى التطبيق..." style="margin-bottom:6px;">
+                <button class="btn-submit" onclick="updateNewsTicker()">تحديث الإعلان الآن</button>
+            </div>
+
+            <div class="admin-card">
+                <h4><i class="fa-solid fa-chart-line"></i> تقرير مبيعات المندوبين (الشهري)</h4>
+                <button class="btn-submit" style="background:#0284c7; margin-bottom:8px;" onclick="exportReportToExcel()">
+                    <i class="fa-solid fa-file-excel"></i> تصدير التقرير لـ Excel
+                </button>
+                <div class="table-responsive">
+                    <table class="report-table" id="reportTable">
+                        <thead>
+                            <tr>
+                                <th>المندوب</th>
+                                <th>المحافظة</th>
+                                <th>الطلبات</th>
+                                <th>المبيعات (د.ع)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="monthlyReportBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="admin-card">
+                <h4><i class="fa-solid fa-user-plus"></i> إضافة وتعيين مندوب لمحافظة</h4>
+                <input type="text" id="newRepName" class="form-input" placeholder="اسم المندوب الثلاثي" style="margin-bottom:6px;">
+                <select class="custom-select" id="adminRepProvinceSelect" style="margin-bottom:6px;"></select>
+                <button class="btn-submit" onclick="addMedicalRep()">حفظ المندوب</button>
+            </div>
+
+            <div class="admin-card">
+                <h4><i class="fa-solid fa-building-ngo"></i> إضافة مذخر جديد</h4>
+                <select class="custom-select" id="adminProvinceSelect" style="margin-bottom:6px;"></select>
+                <input type="text" id="newWarehouseName" class="form-input" placeholder="اسم المذخر" style="margin-bottom:6px;">
+                <button class="btn-submit" onclick="addWarehouse()">حفظ المذخر</button>
+            </div>
+
+            <div class="admin-card">
+                <h4><i class="fa-solid fa-pills"></i> إضافة دواء جديد (بالوحدة)</h4>
+                <input type="text" id="newDrugName" class="form-input" placeholder="اسم الدواء والتركيز" style="margin-bottom:6px;">
+                <input type="text" id="newCompany" class="form-input" placeholder="الشركة المصنعة" style="margin-bottom:6px;">
+                <div style="display:flex; gap:6px; margin-bottom:6px;">
+                    <input type="text" id="newUnitName" class="form-input" placeholder="نوع الوحدة (قطعة / شريط / علبة)">
+                    <input type="number" id="newUnitPrice" class="form-input" placeholder="سعر الوحدة">
+                </div>
+                <input type="text" id="newExpire" class="form-input" placeholder="تاريخ الاكسباير (مثال: 10/2027)" style="margin-bottom:6px;">
+                <input type="text" id="newBonus" class="form-input" placeholder="عروض البونص (مثال: 10+2)" style="margin-bottom:6px;">
+                
+                <label for="drugImageInput" class="file-upload-btn">
+                    <i class="fa-solid fa-camera"></i> رفع صورة الدواء من الهاتف
+                </label>
+                <input type="file" id="drugImageInput" accept="image/*" style="display: none;" onchange="previewImageName(this)">
+                <span id="fileNameDisplay" style="font-size:10px; color:#16a34a; display:block; margin-bottom:6px;"></span>
+
+                <button class="btn-submit" onclick="addDrug()">إضافة الدواء لقائمة الأدوية</button>
+            </div>
+        </main>
+
+        <nav class="bottom-nav">
+            <div class="nav-item active" id="navHomeBtn" onclick="switchTab('home')">
+                <i class="fa-solid fa-pills"></i>
+                <span>الأدوية (المعرض)</span>
+            </div>
+            <div class="nav-item" id="navAdminTabBtn" style="display:none;" onclick="switchTab('admin')">
+                <i class="fa-solid fa-sliders"></i>
+                <span>الإدارة</span>
+            </div>
+            <div class="nav-item" id="navCartBtn" onclick="openCart()">
+                <i class="fa-solid fa-cart-shopping"></i>
+                <span>السلة</span>
+            </div>
+        </nav>
+
+        <!-- نافذة تعديل دواء -->
+        <div class="modal" id="editDrugModal">
+            <div class="invoice-box">
+                <h3 style="text-align:center; margin-bottom:10px; color:#0284c7; font-size:13px;">تعديل بيانات الدواء</h3>
+                <input type="hidden" id="editDrugId">
+                <label style="font-size:10px; font-weight:bold;">اسم الدواء:</label>
+                <input type="text" id="editDrugName" class="form-input" style="margin-bottom:6px;">
+                <label style="font-size:10px; font-weight:bold;">الشركة المصنعة:</label>
+                <input type="text" id="editCompany" class="form-input" style="margin-bottom:6px;">
+                <div style="display:flex; gap:6px; margin-bottom:6px;">
+                    <div style="flex:1;">
+                        <label style="font-size:10px; font-weight:bold;">الوحدة:</label>
+                        <input type="text" id="editUnitName" class="form-input">
+                    </div>
+                    <div style="flex:1;">
+                        <label style="font-size:10px; font-weight:bold;">السعر:</label>
+                        <input type="number" id="editUnitPrice" class="form-input">
+                    </div>
+                </div>
+                <label style="font-size:10px; font-weight:bold;">تاريخ الاكسباير:</label>
+                <input type="text" id="editExpire" class="form-input" style="margin-bottom:6px;">
+                <label style="font-size:10px; font-weight:bold;">عرض البونص:</label>
+                <input type="text" id="editBonus" class="form-input" style="margin-bottom:6px;">
+
+                <label for="editDrugImageInput" class="file-upload-btn">
+                    <i class="fa-solid fa-camera"></i> تغيير صورة الدواء
+                </label>
+                <input type="file" id="editDrugImageInput" accept="image/*" style="display: none;" onchange="previewEditImageName(this)">
+                <span id="editFileNameDisplay" style="font-size:10px; color:#16a34a; display:block; margin-bottom:6px;"></span>
+                
+                <div style="display: flex; gap: 6px;">
+                    <button class="btn-submit" style="background:#16a34a;" onclick="saveEditedDrug()">حفظ التعديلات</button>
+                    <button class="btn-submit" style="background:#64748b;" onclick="closeEditModal()">إلغاء</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- نافذة السلة -->
+        <div class="modal" id="cartModal">
+            <div class="invoice-box">
+                <h3 style="text-align:center; margin-bottom:10px; color:#0284c7; font-size:14px;">طلب مبيعات الصيدلية</h3>
+                
+                <input type="text" id="pharmacyNameInput" class="form-input" placeholder="اسم الصيدلية" style="margin-bottom:6px;">
+                <input type="tel" id="pharmacyPhoneInput" class="form-input" placeholder="رقم هاتف الصيدلية (لإرسال واتساب)" style="margin-bottom:10px;">
+
+                <div class="table-responsive">
+                    <table class="report-table">
+                        <thead>
+                            <tr>
+                                <th>الدواء</th>
+                                <th>الكمية</th>
+                                <th>البونص</th>
+                                <th>الإجمالي</th>
+                                <th>حذف</th>
+                            </tr>
+                        </thead>
+                        <tbody id="cartTableBody"></tbody>
+                    </table>
+                </div>
+
+                <div style="font-weight:bold; font-size:12px; margin-top:10px; text-align:left;">
+                    الإجمالي: <span id="cartTotal" style="color:#16a34a;">0</span> د.ع
+                </div>
+
+                <div style="margin-top: 12px; display: flex; gap: 6px;">
+                    <button class="btn-submit" style="background:#0284c7;" onclick="checkout()">تأكيد وإصدار الفاتورة</button>
+                    <button class="btn-submit" style="background:#64748b;" onclick="closeCart()">إغلاق</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- معرض الصور المكبر -->
+        <div class="image-viewer-modal" id="imageGalleryModal">
+            <div class="gallery-header">
+                <span class="gallery-title" id="galleryTitle">عرض الدواء</span>
+                <button class="close-gallery-btn" onclick="closeGallery()"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+
+            <div class="gallery-main">
+                <button class="nav-arrow-btn" onclick="prevGalleryImage()"><i class="fa-solid fa-chevron-right"></i></button>
+                <div class="gallery-img-container">
+                    <img src="" id="galleryActiveImg" class="gallery-img" alt="صورة مكبرة">
+                    <div class="gallery-caption" id="galleryCaption"></div>
+                </div>
+                <button class="nav-arrow-btn" onclick="nextGalleryImage()"><i class="fa-solid fa-chevron-left"></i></button>
+            </div>
+
+            <div style="color:#94a3b8; font-size:11px; margin-top:4px;" id="galleryCounter">1 من 1</div>
+        </div>
+
+        <!-- نافذة الفاتورة -->
+        <div class="modal" id="invoiceModal">
+            <div class="invoice-box">
+                <div class="styled-invoice" id="printableInvoice">
+                    <div class="inv-head-top">
+                        <div class="inv-brand">
+                            <h2 id="invOfficeTitle">المكتب العلمي للأدوية</h2>
+                            <p>Scientific Bureau for Pharmaceutical Supplies</p>
+                        </div>
+                        <div style="text-align:left;">
+                            <span style="font-size:8.5px; background:#e0f2fe; color:#0369a1; padding:2px 6px; border-radius:4px; font-weight:bold;">فاتورة رسمية</span>
+                        </div>
+                    </div>
+
+                    <div class="inv-details-grid">
+                        <div><b>التاريخ:</b> <span id="invDate"></span></div>
+                        <div><b>المندوب:</b> <span id="invRep"></span></div>
+                        <div><b>الصيدلية:</b> <span id="invPharmacy"></span></div>
+                        <div><b>الهاتف:</b> <span id="invPhone"></span></div>
+                        <div><b>المحافظة:</b> <span id="invProvince"></span></div>
+                        <div><b>المذخر المورد:</b> <span id="invWarehouse"></span></div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="inv-table">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>اسم المادة الدوائية</th>
+                                    <th>الوحدة</th>
+                                    <th>الكمية</th>
+                                    <th>البونص</th>
+                                    <th>المبلغ</th>
+                                </tr>
+                            </thead>
+                            <tbody id="invTableBody"></tbody>
+                        </table>
+                    </div>
+
+                    <div class="inv-total-box">
+                        <span>إجمالي الفاتورة النهائي:</span>
+                        <span id="invFinalTotal">0 د.ع</span>
+                    </div>
+
+                    <p style="text-align:center; font-size:8px; color:#94a3b8; margin-top:8px;">ملاحظة: البونص يحسب مجاناً وفق السياسة التسويقية المعتمدة للمكتب العلمي.</p>
+                </div>
+
+                <div style="margin-top:10px;">
+                    <button class="btn-submit" style="background:#0284c7; margin-bottom:4px;" onclick="directPrint()">
+                        <i class="fa-solid fa-print"></i> طباعة الفاتورة المباشرة
+                    </button>
+                    <button class="btn-submit" style="background:#10b981; margin-bottom:4px;" onclick="downloadPDF()">
+                        <i class="fa-solid fa-file-pdf"></i> تحميل ملف PDF
+                    </button>
+                    <button class="btn-submit" style="background:#25d366; margin-bottom:4px;" onclick="sendWhatsApp()">
+                        <i class="fa-brands fa-whatsapp"></i> إرسال عبر واتساب
+                    </button>
+                    <button class="btn-submit" style="background:#dc2626;" onclick="closeInvoice()">إغلاق</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // تسجيل Service Worker متطور للعمل أوفلاين كلياً
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                const swCode = `
+                    const CACHE_NAME = 'scientific-office-v4';
+                    const urlsToCache = [
+                        './',
+                        'https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap',
+                        'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css',
+                        'https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js',
+                        'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js',
+                        'https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js',
+                        'https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js'
+                    ];
+
+                    self.addEventListener('install', e => {
+                        e.waitUntil(
+                            caches.open(CACHE_NAME).then(cache => {
+                                return cache.addAll(urlsToCache).catch(err => console.log('Cache addAll error:', err));
+                            })
+                        );
+                        self.skipWaiting();
+                    });
+
+                    self.addEventListener('activate', e => {
+                        e.waitUntil(
+                            caches.keys().then(keys => Promise.all(
+                                keys.map(key => {
+                                    if (key !== CACHE_NAME) return caches.delete(key);
+                                })
+                            ))
+                        );
+                        self.clients.claim();
+                    });
+
+                    self.addEventListener('fetch', e => {
+                        e.respondWith(
+                            caches.match(e.request).then(cachedResponse => {
+                                if (cachedResponse) return cachedResponse;
+                                return fetch(e.request).then(networkResponse => {
+                                    if (e.request.method === 'GET' && networkResponse.status === 200) {
+                                        const responseClone = networkResponse.clone();
+                                        caches.open(CACHE_NAME).then(cache => cache.put(e.request, responseClone));
+                                    }
+                                    return networkResponse;
+                                }).catch(() => caches.match('./'));
+                            })
+                        );
+                    });
+                `;
+                const blob = new Blob([swCode], { type: 'application/javascript' });
+                navigator.serviceWorker.register(URL.createObjectURL(blob)).catch(err => console.log('SW Reg error:', err));
+            });
+        }
+
+        // مراقبة حالة الاتصال أوفلاين/أونلاين
+        window.addEventListener('online', updateNetworkStatus);
+        window.addEventListener('offline', updateNetworkStatus);
+
+        function updateNetworkStatus() {
+            const banner = document.getElementById('networkBanner');
+            if (!navigator.onLine) {
+                banner.classList.add('offline');
+            } else {
+                banner.classList.remove('offline');
+            }
+        }
+
+        const iraqProvinces = [
+            "بغداد", "البصرة", "نينوى", "أربيل", "النجف", "كربلاء", 
+            "كركوك", "ذي قار", "أنبار", "ديالى", "بابل", "السليمانية", 
+            "القادسية", "واسط", "ميسان", "صلاح الدين", "المثنى", "دهوك"
+        ];
+
+        let db = null;
+
+        let currentRole = 'REP';
+        let currentUser = null;
+        let uploadedImageData = '';
+        let editedImageData = '';
+
+        let officeName = localStorage.getItem('officeName') || "المكتب العلمي للأدوية";
+        let newsTickerText = localStorage.getItem('newsTickerText') || "📢 نظام المبيعات المطور | بونص أسبوعي خاص | تسجيل ومتابعة مبيعات المندوبين شهرياً.";
+        let adminPass = localStorage.getItem('adminPass') || "1234";
+
+        let medicalReps = JSON.parse(localStorage.getItem('medicalReps')) || [
+            { id: 1, name: "علي الموسوي", province: "بغداد" },
+            { id: 2, name: "حسين الشمري", province: "النجف" }
+        ];
+
+        let salesHistory = JSON.parse(localStorage.getItem('salesHistory')) || [];
+
+        let warehouses = JSON.parse(localStorage.getItem('warehouses')) || {
+            "بغداد": ["مذخر السلام", "مذخر دجلة"],
+            "النجف": ["مذخر النجف الكبير"]
+        };
+
+        let products = JSON.parse(localStorage.getItem('products')) || [
+            { id: 1, name: "Augmentin 1g", company: "GSK", unitName: "علبة", unitPrice: 12000, expire: "10/2026", bonus: "10+2", img: "https://via.placeholder.com/600/0284c7/ffffff?text=Augmentin+1g" },
+            { id: 2, name: "Lipitor 20mg", company: "Pfizer", unitName: "شريط", unitPrice: 7500, expire: "05/2027", bonus: "5+1", img: "https://via.placeholder.com/600/16a34a/ffffff?text=Lipitor+20mg" },
+            { id: 3, name: "Panadol Extra", company: "GSK", unitName: "علبة", unitPrice: 2500, expire: "12/2028", bonus: "10+1", img: "https://via.placeholder.com/600/dc2626/ffffff?text=Panadol+Extra" }
+        ];
+
+        let filteredProductsList = [...products];
+        let currentGalleryIndex = 0;
+        let cart = [];
+        let currentInvoiceData = null;
+
+        // تهيئة Firebase
+        function initFirebase() {
+            const configStr = localStorage.getItem('firebaseConfig');
+            if (configStr) {
+                try {
+                    const cfg = JSON.parse(configStr);
+                    if (!firebase.apps.length) {
+                        firebase.initializeApp(cfg);
+                    }
+                    db = firebase.database();
+                    loadFirebaseInputs(cfg);
+                    syncFromFirebase();
+                } catch(e) {
+                    console.error("خطأ في تهيئة Firebase:", e);
+                }
+            }
+        }
+
+        function saveFirebaseConfig() {
+            const cfg = {
+                apiKey: document.getElementById('fbApiKey').value.trim(),
+                authDomain: document.getElementById('fbAuthDomain').value.trim(),
+                databaseURL: document.getElementById('fbDatabaseURL').value.trim(),
+                projectId: document.getElementById('fbProjectId').value.trim(),
+                storageBucket: document.getElementById('fbStorageBucket').value.trim(),
+                messagingSenderId: document.getElementById('fbMessagingSenderId').value.trim(),
+                appId: document.getElementById('fbAppId').value.trim()
+            };
+            localStorage.setItem('firebaseConfig', JSON.stringify(cfg));
+            alert('تم حفظ إعدادات Firebase! سيتم إعادة تحميل البيانات...');
+            location.reload();
+        }
+
+        function loadFirebaseInputs(cfg) {
+            if(!cfg) return;
+            if(document.getElementById('fbApiKey')) document.getElementById('fbApiKey').value = cfg.apiKey || '';
+            if(document.getElementById('fbAuthDomain')) document.getElementById('fbAuthDomain').value = cfg.authDomain || '';
+            if(document.getElementById('fbDatabaseURL')) document.getElementById('fbDatabaseURL').value = cfg.databaseURL || '';
+            if(document.getElementById('fbProjectId')) document.getElementById('fbProjectId').value = cfg.projectId || '';
+            if(document.getElementById('fbStorageBucket')) document.getElementById('fbStorageBucket').value = cfg.storageBucket || '';
+            if(document.getElementById('fbMessagingSenderId')) document.getElementById('fbMessagingSenderId').value = cfg.messagingSenderId || '';
+            if(document.getElementById('fbAppId')) document.getElementById('fbAppId').value = cfg.appId || '';
+        }
+
+        function syncFromFirebase() {
+            if (!db) return;
+            db.ref('appData').on('value', (snapshot) => {
+                const data = snapshot.val();
+                if (data) {
+                    if (data.products) products = data.products;
+                    if (data.warehouses) warehouses = data.warehouses;
+                    if (data.medicalReps) medicalReps = data.medicalReps;
+                    if (data.salesHistory) salesHistory = data.salesHistory;
+                    if (data.newsTickerText) newsTickerText = data.newsTickerText;
+                    if (data.officeName) officeName = data.officeName;
+                    if (data.adminPass) adminPass = data.adminPass;
+
+                    saveDataLocal(false);
+                    initProvincesAndReps();
+                    filterProducts();
+                    if (currentRole === 'ADMIN') {
+                        loadMonthlyReport();
+                        renderAdminProducts();
+                        renderAdminReps();
+                        renderAdminWarehouses();
+                    }
+                }
+            });
+        }
+
+        function saveDataLocal(syncToFb = true) {
+            localStorage.setItem('products', JSON.stringify(products));
+            localStorage.setItem('warehouses', JSON.stringify(warehouses));
+            localStorage.setItem('medicalReps', JSON.stringify(medicalReps));
+            localStorage.setItem('salesHistory', JSON.stringify(salesHistory));
+            localStorage.setItem('newsTickerText', newsTickerText);
+            localStorage.setItem('officeName', officeName);
+            localStorage.setItem('adminPass', adminPass);
+
+            if (syncToFb && db) {
+                db.ref('appData').set({
+                    products,
+                    warehouses,
+                    medicalReps,
+                    salesHistory,
+                    newsTickerText,
+                    officeName,
+                    adminPass
+                });
+            }
+        }
+
+        /* --- التحكم بنظام تسجيل الدخول --- */
+        function switchLoginTab(tab) {
+            if(tab === 'REP') {
+                document.getElementById('tabRepBtn').classList.add('active');
+                document.getElementById('tabAdminBtn').classList.remove('active');
+                document.getElementById('repLoginForm').style.display = 'flex';
+                document.getElementById('adminLoginForm').style.display = 'none';
+            } else {
+                document.getElementById('tabAdminBtn').classList.add('active');
+                document.getElementById('tabRepBtn').classList.remove('active');
+                document.getElementById('adminLoginForm').style.display = 'flex';
+                document.getElementById('repLoginForm').style.display = 'none';
+            }
+        }
+
+        function loginAsRep() {
+            const repNameInput = document.getElementById('loginRepNameInput').value.trim();
+            if(!repNameInput) return alert('يرجى إدخال اسم المندوب أولاً!');
+            
+            // --- الترقيع الأمني: التحقق من وجود المندوب في النظام ---
+            const foundRep = medicalReps.find(r => r.name.trim() === repNameInput);
+            
+            if (!foundRep) {
+                alert('عذراً، هذا الاسم غير مسجل ضمن قائمة المندوبين المعتمدين! يرجى مراجعة المدير العام.');
+                return;
+            }
+
+            // التسجيل بالبيانات الصحيحة للمندوب
+            currentUser = { name: foundRep.name, province: foundRep.province };
+            currentRole = 'REP';
+
+            document.getElementById('roleLabel').innerHTML = `المندوب: <b>${foundRep.name}</b> (${foundRep.province})`;
+            document.getElementById('repView').style.display = 'block';
+            document.getElementById('adminView').style.display = 'none';
+            document.getElementById('filterSection').style.display = 'flex';
+            
+            // إخفاء تبويب الإدارة نهائياً للمندوب
+            document.getElementById('navAdminTabBtn').style.display = 'none';
+            
+            // ضبط المحافظة تلقائياً بناءً على المندوب المسجل
+            if(document.getElementById('provinceSelect')) {
+                document.getElementById('provinceSelect').value = foundRep.province;
+                loadWarehouses(); // تحميل مذاخر المحافظة تلقائياً
+            }
+
+            document.getElementById('appHeaderTitle').innerText = `${officeName} - معرض الأدوية`;
+            document.getElementById('loginScreen').style.display = 'none';
+            switchTab('home');
+        }
+
+        function loginAsAdmin() {
+            const pass = document.getElementById('adminPasswordInput').value;
+            if(pass !== adminPass) return alert('رمز المرور غير صحيح!');
+
+            currentRole = 'ADMIN';
+            currentUser = { name: "المدير العام" };
+
+            document.getElementById('roleLabel').innerHTML = 'الحساب: <b>المدير العام</b>';
+            document.getElementById('repView').style.display = 'block';
+            document.getElementById('adminView').style.display = 'none';
+            document.getElementById('filterSection').style.display = 'flex';
+            
+            // إظهار تبويب الإدارة للمدير العام فقط
+            document.getElementById('navAdminTabBtn').style.display = 'flex';
+            
+            document.getElementById('appHeaderTitle').innerText = `${officeName} - معرض الأدوية`;
+
+            loadMonthlyReport();
+            renderAdminProducts();
+            renderAdminReps();
+            renderAdminWarehouses();
+            filterProducts();
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('adminPasswordInput').value = '';
+            switchTab('home');
+        }
+
+        function logout() {
+            currentRole = 'REP';
+            currentUser = null;
+            document.getElementById('navAdminTabBtn').style.display = 'none';
+            document.getElementById('loginScreen').style.display = 'flex';
+        }
+
+        function switchTab(tab) {
+            if (tab === 'home') {
+                document.getElementById('navHomeBtn').classList.add('active');
+                if(document.getElementById('navAdminTabBtn')) document.getElementById('navAdminTabBtn').classList.remove('active');
+                document.getElementById('repView').style.display = 'block';
+                document.getElementById('adminView').style.display = 'none';
+                document.getElementById('filterSection').style.display = 'flex';
+                document.getElementById('appHeaderTitle').innerText = `${officeName} - معرض الأدوية`;
+            } else if (tab === 'admin') {
+                // حماية إضافية: يمنع التحويل إن لم يكن المستخدم مديراً
+                if (currentRole !== 'ADMIN') {
+                    alert('عذراً، هذه اللوحة مخصصة للمدير العام فقط!');
+                    return;
+                }
+                document.getElementById('navAdminTabBtn').classList.add('active');
+                document.getElementById('navHomeBtn').classList.remove('active');
+                document.getElementById('repView').style.display = 'none';
+                document.getElementById('adminView').style.display = 'flex';
+                document.getElementById('filterSection').style.display = 'none';
+                document.getElementById('appHeaderTitle').innerText = 'لوحة الإدارة والتقارير الشهريّة';
+            }
+        }
+
+        function updateAdminPassword() {
+            const newP = document.getElementById('newAdminPassword').value;
+            if(newP.trim() !== '') {
+                adminPass = newP;
+                saveDataLocal();
+                alert('تم تغيير رمز مرور الإدارة بنجاح!');
+                document.getElementById('newAdminPassword').value = '';
+            } else {
+                alert('ادخل رمز المرور الجديد');
+            }
+        }
+
+        function updateOfficeName() {
+            const inputVal = document.getElementById('officeNameInput').value;
+            if(inputVal.trim() !== '') {
+                officeName = inputVal;
+                applyOfficeName();
+                saveDataLocal();
+                alert('تم تحديث اسم المكتب العلمي بنجاح!');
+            } else {
+                alert('يرجى كتابة اسم المكتب');
+            }
+        }
+
+        function applyOfficeName() {
+            document.getElementById('loginOfficeTitle').innerText = officeName;
+            document.getElementById('invOfficeTitle').innerText = officeName;
+            document.getElementById('officeNameInput').value = officeName;
+            if(currentRole === 'REP') {
+                document.getElementById('appHeaderTitle').innerText = `${officeName} - معرض الأدوية`;
+            }
+        }
+
+        function updateNewsTicker() {
+            const inputVal = document.getElementById('newsInput').value;
+            if(inputVal.trim() !== '') {
+                newsTickerText = inputVal;
+                document.getElementById('tickerDisplay').innerText = newsTickerText;
+                saveDataLocal();
+                alert('تم تحديث شريط الإعلانات بنجاح!');
+                document.getElementById('newsInput').value = '';
+            } else {
+                alert('يرجى إدخال نص الإعلان أولاً');
+            }
+        }
+
+        function initProvincesAndReps() {
+            applyOfficeName();
+            document.getElementById('tickerDisplay').innerText = newsTickerText;
+            document.getElementById('newsInput').value = newsTickerText;
+
+            const selects = [
+                document.getElementById('provinceSelect'), 
+                document.getElementById('adminProvinceSelect'),
+                document.getElementById('adminRepProvinceSelect')
+            ];
+            selects.forEach(sel => {
+                if(!sel) return;
+                sel.innerHTML = '<option value="">اختر المحافظة...</option>';
+                iraqProvinces.forEach(p => {
+                    sel.innerHTML += `<option value="${p}">${p}</option>`;
+                });
+            });
+
+            const companySelect = document.getElementById('companySelect');
+            companySelect.innerHTML = '<option value="ALL">جميع الشركات</option>';
+            const companies = [...new Set(products.map(p => p.company))];
+            companies.forEach(c => {
+                companySelect.innerHTML += `<option value="${c}">${c}</option>`;
+            });
+        }
+
+        function addMedicalRep() {
+            const name = document.getElementById('newRepName').value;
+            const prov = document.getElementById('adminRepProvinceSelect').value;
+            if(name && prov) {
+                medicalReps.push({ id: Date.now(), name, province: prov });
+                saveDataLocal();
+                initProvincesAndReps();
+                renderAdminReps();
+                alert(`تم تسجيل المندوب ${name} لمحافظة ${prov}`);
+                document.getElementById('newRepName').value = '';
+            } else {
+                alert('ادخل اسم المندوب واختر المحافظة');
+            }
+        }
+
+        function renderAdminReps() {
+            const tbody = document.getElementById('adminRepsTableBody');
+            if(!tbody) return;
+            tbody.innerHTML = '';
+            medicalReps.forEach(rep => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td><b>${rep.name}</b></td>
+                        <td>${rep.province}</td>
+                        <td><button class="btn-delete-item" onclick="deleteRep(${rep.id})"><i class="fa-solid fa-trash"></i></button></td>
+                    </tr>
+                `;
+            });
+        }
+
+        function deleteRep(id) {
+            if(confirm('هل أنت تأكد من حذف هذا المندوب؟')) {
+                medicalReps = medicalReps.filter(r => r.id !== id);
+                saveDataLocal();
+                renderAdminReps();
+                loadMonthlyReport();
+            }
+        }
+
+        function renderAdminWarehouses() {
+            const tbody = document.getElementById('adminWarehousesTableBody');
+            if(!tbody) return;
+            tbody.innerHTML = '';
+            Object.keys(warehouses).forEach(prov => {
+                warehouses[prov].forEach((wh, index) => {
+                    tbody.innerHTML += `
+                        <tr>
+                            <td>${prov}</td>
+                            <td><b>${wh}</b></td>
+                            <td><button class="btn-delete-item" onclick="deleteWarehouse('${prov}', ${index})"><i class="fa-solid fa-trash"></i></button></td>
+                        </tr>
+                    `;
+                });
+            });
+        }
+
+        function deleteWarehouse(prov, index) {
+            if(confirm('هل أنت تأكد من حذف هذا المذخر؟')) {
+                warehouses[prov].splice(index, 1);
+                if(warehouses[prov].length === 0) delete warehouses[prov];
+                saveDataLocal();
+                renderAdminWarehouses();
+                loadWarehouses();
+            }
+        }
+
+        function loadMonthlyReport() {
+            const tbody = document.getElementById('monthlyReportBody');
+            if(!tbody) return;
+            tbody.innerHTML = '';
+
+            let grandTotalSales = 0;
+            let grandTotalOrders = salesHistory.length;
+
+            medicalReps.forEach(rep => {
+                const repSales = salesHistory.filter(s => s.repName === rep.name);
+                const totalAmount = repSales.reduce((sum, item) => sum + item.totalPrice, 0);
+                grandTotalSales += totalAmount;
+
+                tbody.innerHTML += `
+                    <tr>
+                        <td><b>${rep.name}</b></td>
+                        <td>${rep.province}</td>
+                        <td>${repSales.length} طلبية</td>
+                        <td style="color:#16a34a; font-weight:bold;">${totalAmount.toLocaleString()}</td>
+                    </tr>
+                `;
+            });
+
+            document.getElementById('kpiTotalSales').innerText = grandTotalSales.toLocaleString() + ' د.ع';
+            document.getElementById('kpiTotalOrders').innerText = grandTotalOrders;
+        }
+
+        function exportReportToExcel() {
+            if (typeof XLSX === 'undefined') return alert('جار تحميل مكتبة Excel...');
+            const table = document.getElementById('reportTable');
+            const wb = XLSX.utils.table_to_book(table, { sheet: "تقرير المبيعات" });
+            XLSX.writeFile(wb, "تقرير_مبيعات_المكتب_العلمي.xlsx");
+        }
+
+        /* --- إدارة وحذف وتعديل الأدوية --- */
+        function renderAdminProducts() {
+            const tbody = document.getElementById('adminProductsTableBody');
+            if(!tbody) return;
+            tbody.innerHTML = '';
+
+            products.forEach(p => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td><b>${p.name}</b></td>
+                        <td>${p.company}</td>
+                        <td>${p.unitPrice.toLocaleString()} د.ع</td>
+                        <td>${p.bonus || 'بلا بونص'}</td>
+                        <td>
+                            <div style="display:flex; gap:4px; justify-content:center;">
+                                <button class="btn-edit-item" onclick="openEditDrugModal(${p.id})"><i class="fa-solid fa-pen"></i></button>
+                                <button class="btn-delete-item" onclick="deleteDrug(${p.id})"><i class="fa-solid fa-trash"></i></button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        function deleteDrug(id) {
+            if(confirm('هل أنت تأكد من حذف هذا الدواء؟')) {
+                products = products.filter(p => p.id !== id);
+                saveDataLocal();
+                filterProducts();
+                renderAdminProducts();
+                alert('تم حذف الدواء بنجاح');
+            }
+        }
+
+        function openEditDrugModal(id) {
+            const prod = products.find(p => p.id === id);
+            if(!prod) return;
+
+            document.getElementById('editDrugId').value = prod.id;
+            document.getElementById('editDrugName').value = prod.name;
+            document.getElementById('editCompany').value = prod.company;
+            document.getElementById('editUnitName').value = prod.unitName;
+            document.getElementById('editUnitPrice').value = prod.unitPrice;
+            document.getElementById('editExpire').value = prod.expire;
+            document.getElementById('editBonus').value = prod.bonus;
+            editedImageData = '';
+            document.getElementById('editFileNameDisplay').innerText = '';
+
+            document.getElementById('editDrugModal').style.display = 'flex';
+        }
+
+        function closeEditModal() {
+            document.getElementById('editDrugModal').style.display = 'none';
+        }
+
+        function saveEditedDrug() {
+            const id = parseInt(document.getElementById('editDrugId').value);
+            const prod = products.find(p => p.id === id);
+            if(!prod) return;
+
+            prod.name = document.getElementById('editDrugName').value.trim() || prod.name;
+            prod.company = document.getElementById('editCompany').value.trim() || prod.company;
+            prod.unitName = document.getElementById('editUnitName').value.trim() || prod.unitName;
+            prod.unitPrice = parseFloat(document.getElementById('editUnitPrice').value) || prod.unitPrice;
+            prod.expire = document.getElementById('editExpire').value.trim() || prod.expire;
+            prod.bonus = document.getElementById('editBonus').value.trim() || prod.bonus;
+            if(editedImageData) {
+                prod.img = editedImageData;
+            }
+
+            saveDataLocal();
+            initProvincesAndReps();
+            filterProducts();
+            renderAdminProducts();
+            closeEditModal();
+            alert('تم حفظ تعديلات الدواء بنجاح');
+        }
+
+        function calculateAutoBonus(bonusStr, qty) {
+            if (!bonusStr || !bonusStr.includes('+')) return 0;
+            const parts = bonusStr.split('+').map(p => parseInt(p.trim()));
+            if (parts.length === 2 && !isNaN(parts[0]) && !isNaN(parts[1]) && parts[0] > 0) {
+                return Math.floor(qty / parts[0]) * parts[1];
+            }
+            return 0;
+        }
+
+        function renderProducts(items) {
+            filteredProductsList = items;
+            const list = document.getElementById('productList');
+            list.innerHTML = '';
+            if (items.length === 0) {
+                list.innerHTML = '<div style="text-align:center; color:#94a3b8; padding:30px 10px; font-size:12px;"><i class="fa-solid fa-box-open" style="font-size:28px; margin-bottom:8px; display:block;"></i>لا توجد أدوية مطابقة للبحث</div>';
+                return;
+            }
+            items.forEach((p, index) => {
+                list.innerHTML += `
+                    <div class="product-card">
+                        ${p.bonus && p.bonus !== 'بلا بونص' ? `<span class="bonus-tag">بونص ${p.bonus}</span>` : ''}
+                        <img src="${p.img}" class="product-img" alt="${p.name}" onclick="openGallery(${index})" title="انقر لتكبير الصورة وتصفح المعرض">
+                        <div class="product-info">
+                            <div>
+                                <div class="product-name">${p.name}</div>
+                                <div class="company-badge">${p.company}</div>
+                                <div class="product-meta">Nf: ${p.expire}</div>
+                                <div class="price-box">
+                                    سعر الـ (${p.unitName}): ${p.unitPrice.toLocaleString()} د.ع
+                                </div>
+                            </div>
+                            <div class="action-row">
+                                <input type="number" class="unit-qty-input" id="qty-${p.id}" value="1" min="1">
+                                <button class="btn-add" onclick="addToCart(${p.id})">+ إضافة بالوحدة</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function openGallery(index) {
+            if (filteredProductsList.length === 0) return;
+            currentGalleryIndex = index;
+            updateGalleryDisplay();
+            document.getElementById('imageGalleryModal').style.display = 'flex';
+        }
+
+        function closeGallery() { document.getElementById('imageGalleryModal').style.display = 'none'; }
+
+        function updateGalleryDisplay() {
+            const item = filteredProductsList[currentGalleryIndex];
+            document.getElementById('galleryActiveImg').src = item.img;
+            document.getElementById('galleryTitle').innerText = item.name;
+            document.getElementById('galleryCaption').innerText = `الشركة: ${item.company} | السعر: ${item.unitPrice.toLocaleString()} د.ع | البونص: ${item.bonus}`;
+            document.getElementById('galleryCounter').innerText = `${currentGalleryIndex + 1} من ${filteredProductsList.length}`;
+        }
+
+        function nextGalleryImage() {
+            currentGalleryIndex = (currentGalleryIndex < filteredProductsList.length - 1) ? currentGalleryIndex + 1 : 0;
+            updateGalleryDisplay();
+        }
+
+        function prevGalleryImage() {
+            currentGalleryIndex = (currentGalleryIndex > 0) ? currentGalleryIndex - 1 : filteredProductsList.length - 1;
+            updateGalleryDisplay();
+        }
+
+        function filterProducts() {
+            const comp = document.getElementById('companySelect').value;
+            const searchText = document.getElementById('searchInput') ? document.getElementById('searchInput').value.trim().toLowerCase() : '';
+            
+            let result = products;
+
+            if (comp !== 'ALL') {
+                result = result.filter(p => p.company === comp);
+            }
+
+            if (searchText !== '') {
+                result = result.filter(p => p.name.toLowerCase().includes(searchText) || p.company.toLowerCase().includes(searchText));
+            }
+
+            renderProducts(result);
+        }
+
+        function loadWarehouses() {
+            const province = document.getElementById('provinceSelect').value;
+            const warehouseSelect = document.getElementById('warehouseSelect');
+            warehouseSelect.innerHTML = '<option value="">اختر المذخر...</option>';
+            if(province && warehouses[province]) {
+                warehouses[province].forEach(wh => {
+                    warehouseSelect.innerHTML += `<option value="${wh}">${wh}</option>`;
+                });
+            }
+        }
+
+        function addToCart(id) {
+            const prod = products.find(p => p.id === id);
+            const qtyInput = parseInt(document.getElementById(`qty-${id}`).value) || 1;
+
+            const item = cart.find(c => c.id === id);
+            if(item) { 
+                item.qty += qtyInput; 
+            } else { 
+                cart.push({...prod, qty: qtyInput}); 
+            }
+            document.getElementById('cartBadge').innerText = cart.reduce((s, i) => s + i.qty, 0);
+        }
+
+        function openCart() {
+            renderCartItems();
+            document.getElementById('cartModal').style.display = 'flex';
+        }
+
+        function renderCartItems() {
+            const tbody = document.getElementById('cartTableBody');
+            tbody.innerHTML = '';
+            let total = 0;
+            
+            cart.forEach((item, idx) => {
+                const bonusQty = calculateAutoBonus(item.bonus, item.qty);
+                let t = item.unitPrice * item.qty;
+                total += t;
+                
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${item.name}</td>
+                        <td><b>${item.qty}</b> ${item.unitName}</td>
+                        <td style="color:#16a34a; font-weight:bold;">${bonusQty > 0 ? `+${bonusQty}` : '0'}</td>
+                        <td>${t.toLocaleString()}</td>
+                        <td><button class="btn-delete-item" onclick="removeFromCart(${idx})"><i class="fa-solid fa-trash"></i></button></td>
+                    </tr>
+                `;
+            });
+            document.getElementById('cartTotal').innerText = total.toLocaleString();
+        }
+
+        function removeFromCart(index) {
+            cart.splice(index, 1);
+            document.getElementById('cartBadge').innerText = cart.reduce((s, i) => s + i.qty, 0);
+            renderCartItems();
+        }
+
+        function closeCart() { document.getElementById('cartModal').style.display = 'none'; }
+
+        function checkout() {
+            const repName = (currentUser && currentUser.name) ? currentUser.name : 'غير محدد';
+            const pharmacy = document.getElementById('pharmacyNameInput').value;
+            const phone = document.getElementById('pharmacyPhoneInput').value;
+            const province = document.getElementById('provinceSelect').value;
+            const warehouse = document.getElementById('warehouseSelect').value;
+
+            if(!pharmacy || !province || !warehouse) {
+                alert('تنبيه: تأكد من اختيار المحافظة، المذخر وإدخال اسم الصيدلية!');
+                return;
+            }
+            if(cart.length === 0) return alert('السلة فارغة!');
+
+            document.getElementById('invRep').innerText = repName;
+            document.getElementById('invPharmacy').innerText = pharmacy;
+            document.getElementById('invPhone').innerText = phone || 'غير مدخل';
+            document.getElementById('invProvince').innerText = province;
+            document.getElementById('invWarehouse').innerText = warehouse;
+            document.getElementById('invDate').innerText = new Date().toLocaleDateString('ar-IQ');
+
+            const tbody = document.getElementById('invTableBody');
+            tbody.innerHTML = '';
+            let total = 0;
+            
+            currentInvoiceData = {
+                repName, pharmacy, phone, province, warehouse,
+                date: new Date().toLocaleDateString('ar-IQ'),
+                items: [],
+                totalPrice: 0
+            };
+
+            cart.forEach((item, index) => {
+                const bonusQty = calculateAutoBonus(item.bonus, item.qty);
+                const subTotal = item.unitPrice * item.qty;
+                total += subTotal;
+
+                currentInvoiceData.items.push({
+                    name: item.name, unitName: item.unitName,
+                    qty: item.qty, bonusQty, price: item.unitPrice
+                });
+
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${index + 1}</td>
+                        <td><b>${item.name}</b></td>
+                        <td>${item.unitName}</td>
+                        <td>${item.qty}</td>
+                        <td style="color:#16a34a; font-weight:bold;">${bonusQty > 0 ? `+${bonusQty}` : '0'}</td>
+                        <td>${subTotal.toLocaleString()}</td>
+                    </tr>
+                `;
+            });
+
+            currentInvoiceData.totalPrice = total;
+            document.getElementById('invFinalTotal').innerText = total.toLocaleString() + " د.ع";
+
+            salesHistory.push(currentInvoiceData);
+            saveDataLocal();
+
+            closeCart();
+            document.getElementById('invoiceModal').style.display = 'flex';
+            cart = [];
+            document.getElementById('cartBadge').innerText = 0;
+        }
+
+        function directPrint() { window.print(); }
+
+        function downloadPDF() {
+            const element = document.getElementById('printableInvoice');
+            if (typeof html2pdf !== 'undefined') {
+                const opt = {
+                    margin: 0.2,
+                    filename: `فاتورة_${currentInvoiceData ? currentInvoiceData.pharmacy : 'مبيعات'}.pdf`,
+                    image: { type: 'jpeg', quality: 0.98 },
+                    html2canvas: { scale: 2 },
+                    jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+                };
+                html2pdf().set(opt).from(element).save();
+            } else {
+                alert("جاري استخدام الطباعة المباشرة كبديل.");
+                directPrint();
+            }
+        }
+
+        function sendWhatsApp() {
+            if(!currentInvoiceData) return;
+            let phone = currentInvoiceData.phone.replace(/[^0-9]/g, '');
+            if(!phone) return alert('ادخل رقم الهاتف أولاً');
+            if(phone.startsWith('0')) phone = '964' + phone.substring(1);
+
+            let msg = `*فاتورة تجهيز - ${officeName}*\n`;
+            msg += `🗓 التاريخ: ${currentInvoiceData.date}\n`;
+            msg += `👨‍⚕️ المندوب: ${currentInvoiceData.repName}\n`;
+            msg += `🏥 الصيدلية: ${currentInvoiceData.pharmacy}\n`;
+            msg += `📍 المحافظة: ${currentInvoiceData.province} (${currentInvoiceData.warehouse})\n`;
+            msg += `-----------------------------------\n`;
+
+            currentInvoiceData.items.forEach((it, idx) => {
+                msg += `${idx + 1}. ${it.name} | الكمية: ${it.qty} ${it.unitName} ${it.bonusQty > 0 ? `(+${it.bonusQty} بونص)` : ''}\n`;
+            });
+
+            msg += `-----------------------------------\n`;
+            msg += `💰 *المبلغ الكلي:* ${currentInvoiceData.totalPrice.toLocaleString()} د.ع\n`;
+
+            window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, '_blank');
+        }
+
+        function closeInvoice() { document.getElementById('invoiceModal').style.display = 'none'; }
+
+        // دالة تحسين ضغط الصورة وتخزينها خفيفة الوزن
+        function compressImage(file, callback) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = new Image();
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    const maxWidth = 500;
+                    const scaleSize = maxWidth / img.width;
+                    canvas.width = maxWidth;
+                    canvas.height = img.height * scaleSize;
+
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                    const compressedBase64 = canvas.toDataURL('image/jpeg', 0.7);
+                    callback(compressedBase64);
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function previewImageName(input) {
+            if (input.files && input.files[0]) {
+                compressImage(input.files[0], function(base64Img) {
+                    uploadedImageData = base64Img;
+                    document.getElementById('fileNameDisplay').innerText = "تم رفع وتمييز الصورة بنجاح";
+                });
+            }
+        }
+
+        function previewEditImageName(input) {
+            if (input.files && input.files[0]) {
+                compressImage(input.files[0], function(base64Img) {
+                    editedImageData = base64Img;
+                    document.getElementById('editFileNameDisplay').innerText = "تم تحديث صورة الدواء بنجاح";
+                });
+            }
+        }
+
+        function addWarehouse() {
+            const prov = document.getElementById('adminProvinceSelect').value;
+            const name = document.getElementById('newWarehouseName').value;
+            if(name && prov) {
+                if(!warehouses[prov]) warehouses[prov] = [];
+                warehouses[prov].push(name);
+                saveDataLocal();
+                renderAdminWarehouses();
+                loadWarehouses();
+                alert(`تم حفظ المذخر ${name}`);
+                document.getElementById('newWarehouseName').value = '';
+            }
+        }
+
+        function addDrug() {
+            const name = document.getElementById('newDrugName').value;
+            const company = document.getElementById('newCompany').value;
+            const unitName = document.getElementById('newUnitName').value || 'وحدة';
+            const unitPrice = parseFloat(document.getElementById('newUnitPrice').value);
+            const expire = document.getElementById('newExpire').value || '10/2027';
+            const bonus = document.getElementById('newBonus').value || 'بلا بونص';
+            const img = uploadedImageData || 'https://via.placeholder.com/600/0284c7/ffffff?text=' + encodeURIComponent(name);
+
+            if(name && company && unitPrice) {
+                products.push({ id: Date.now(), name, company, unitName, unitPrice, expire, bonus, img });
+                saveDataLocal();
+                alert('تمت إضافة الدواء بنجاح');
+                initProvincesAndReps();
+                renderProducts(products);
+                renderAdminProducts();
+                
+                document.getElementById('newDrugName').value = '';
+                document.getElementById('newCompany').value = '';
+                document.getElementById('newUnitPrice').value = '';
+                uploadedImageData = '';
+                document.getElementById('fileNameDisplay').innerText = '';
+            } else {
+                alert('يرجى ملء البيانات الرئيسية للدواء');
+            }
+        }
+
+        // تشغيل التهيئة تلقائياً عند الفتح
+        updateNetworkStatus();
+        initProvincesAndReps();
+        initFirebase();
+        filterProducts();
+    </script>
+</body>
+</html>
