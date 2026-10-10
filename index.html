@@ -38,7 +38,7 @@
 
         .app-container {
             width: 100%;
-            max-width: 450px;
+            max-width: 480px;
             height: 100vh;
             max-height: 100dvh;
             background-color: #f8fafc;
@@ -49,12 +49,33 @@
             overflow: hidden;
         }
 
-        @media (min-width: 480px) {
+        /* --- تحسين الاستجابة المتقدمة للأجهزة اللوحية (Tablets) --- */
+        @media (min-width: 768px) {
             .app-container {
-                height: 92vh;
-                max-height: 932px;
-                border-radius: 24px;
+                max-width: 850px;
+                height: 94vh;
+                max-height: 1024px;
+                border-radius: 20px;
                 border: 6px solid #1e293b;
+            }
+            #productList {
+                display: grid !important;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 14px;
+            }
+            .admin-cards-grid {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 12px;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .app-container {
+                max-width: 980px;
+            }
+            #productList {
+                grid-template-columns: repeat(3, 1fr) !important;
             }
         }
 
@@ -62,10 +83,10 @@
         .network-banner {
             background-color: #ef4444;
             color: #ffffff;
-            font-size: 10px;
+            font-size: 11px;
             font-weight: 700;
             text-align: center;
-            padding: 4px 8px;
+            padding: 5px 8px;
             display: none;
             z-index: 400;
         }
@@ -91,8 +112,8 @@
         .login-card {
             background: #1e293b;
             width: 100%;
-            max-width: 380px;
-            padding: 24px 20px;
+            max-width: 440px;
+            padding: 30px 24px;
             border-radius: 20px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.4);
             border: 1px solid #334155;
@@ -102,20 +123,20 @@
         }
 
         .login-logo {
-            font-size: 38px;
+            font-size: 44px;
             color: #38bdf8;
             margin-bottom: 8px;
         }
 
         .login-title {
-            font-size: 18px;
+            font-size: 20px;
             font-weight: 800;
             margin-bottom: 4px;
             color: #f8fafc;
         }
 
         .login-subtitle {
-            font-size: 11px;
+            font-size: 12.5px;
             color: #94a3b8;
             margin-bottom: 18px;
         }
@@ -125,17 +146,17 @@
             background: #0f172a;
             border-radius: 10px;
             padding: 4px;
-            margin-bottom: 16px;
+            margin-bottom: 18px;
             gap: 4px;
         }
 
         .tab-btn {
             flex: 1;
-            padding: 8px 4px;
+            padding: 10px 4px;
             border: none;
             background: transparent;
             color: #94a3b8;
-            font-size: 12px;
+            font-size: 13px;
             font-weight: 700;
             border-radius: 8px;
             cursor: pointer;
@@ -155,7 +176,7 @@
         }
 
         .login-form label {
-            font-size: 11px;
+            font-size: 12px;
             color: #cbd5e1;
             font-weight: 700;
         }
@@ -164,10 +185,10 @@
         .news-ticker {
             background-color: #dc2626;
             color: #ffffff;
-            padding: 6px 0;
+            padding: 7px 0;
             overflow: hidden;
             white-space: nowrap;
-            font-size: 11px;
+            font-size: 12px;
             font-weight: 700;
             flex-shrink: 0;
         }
@@ -175,7 +196,7 @@
         .ticker-text {
             display: inline-block;
             padding-right: 100%;
-            animation: ticker 18s linear infinite;
+            animation: ticker 22s linear infinite;
         }
 
         @keyframes ticker {
@@ -186,11 +207,11 @@
         .role-switcher {
             background: #0f172a;
             color: #fff;
-            padding: 8px 12px;
+            padding: 9px 16px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-size: 11px;
+            font-size: 12.5px;
             flex-shrink: 0;
         }
 
@@ -198,17 +219,17 @@
             background: #ef4444;
             color: white;
             border: none;
-            padding: 4px 10px;
+            padding: 5px 12px;
             border-radius: 6px;
             cursor: pointer;
             font-weight: 700;
-            font-size: 11px;
+            font-size: 12px;
         }
 
         .header {
             background-color: #0284c7;
             color: #ffffff;
-            padding: 12px 14px;
+            padding: 14px 18px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -216,7 +237,7 @@
         }
 
         .header-title {
-            font-size: 14px;
+            font-size: 16px;
             font-weight: 700;
             white-space: nowrap;
             overflow: hidden;
@@ -226,8 +247,8 @@
         .cart-icon-btn {
             position: relative;
             cursor: pointer;
-            font-size: 18px;
-            padding: 2px 6px;
+            font-size: 21px;
+            padding: 2px 8px;
         }
 
         .badge {
@@ -236,8 +257,8 @@
             left: -6px;
             background-color: #ef4444;
             color: white;
-            font-size: 9px;
-            padding: 2px 6px;
+            font-size: 10px;
+            padding: 2px 7px;
             border-radius: 10px;
             font-weight: 800;
             border: 2px solid #0284c7;
@@ -245,24 +266,24 @@
 
         .filter-section {
             background: #fff;
-            padding: 8px 10px;
+            padding: 12px 14px;
             border-bottom: 1px solid #e2e8f0;
             display: flex;
             flex-direction: column;
-            gap: 6px;
+            gap: 8px;
             flex-shrink: 0;
         }
 
         .select-group {
             display: flex;
-            gap: 6px;
+            gap: 8px;
         }
 
         .custom-select, .form-input {
             flex: 1;
             min-width: 0;
-            padding: 8px 10px;
-            font-size: 11px;
+            padding: 10px 12px;
+            font-size: 12.5px;
             border-radius: 8px;
             border: 1px solid #cbd5e1;
             background: #f8fafc;
@@ -279,7 +300,7 @@
 
         .content {
             flex: 1;
-            padding: 10px;
+            padding: 14px;
             overflow-y: auto;
             -webkit-overflow-scrolling: touch;
         }
@@ -287,11 +308,11 @@
         .product-card {
             background: #ffffff;
             border-radius: 14px;
-            padding: 12px;
+            padding: 14px;
             margin-bottom: 12px;
             border: 1px solid #e2e8f0;
             display: flex;
-            gap: 12px;
+            gap: 14px;
             position: relative;
             box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
             transition: transform 0.2s ease, box-shadow 0.2s ease;
@@ -303,21 +324,21 @@
 
         .bonus-tag {
             position: absolute;
-            top: 8px;
-            left: 8px;
+            top: 10px;
+            left: 10px;
             background: #16a34a;
             color: #fff;
-            font-size: 9px;
+            font-size: 10px;
             font-weight: 700;
-            padding: 3px 8px;
+            padding: 3px 9px;
             border-radius: 6px;
             z-index: 2;
             box-shadow: 0 2px 4px rgba(22,163,74,0.3);
         }
 
         .product-img {
-            width: 85px;
-            height: 85px;
+            width: 95px;
+            height: 95px;
             object-fit: cover;
             border-radius: 10px;
             border: 1px solid #e2e8f0;
@@ -340,7 +361,7 @@
         }
 
         .product-name {
-            font-size: 13.5px;
+            font-size: 14.5px;
             font-weight: 800;
             color: #0f172a;
             word-break: break-word;
@@ -349,19 +370,19 @@
 
         .company-badge {
             color: #0284c7;
-            font-size: 10px;
+            font-size: 11.5px;
             font-weight: 700;
             margin-top: 2px;
         }
 
         .product-meta {
-            font-size: 10px;
+            font-size: 11px;
             color: #64748b;
             margin-top: 2px;
         }
 
         .price-box {
-            font-size: 11.5px;
+            font-size: 12.5px;
             color: #059669;
             font-weight: 800;
             margin-top: 4px;
@@ -369,16 +390,16 @@
 
         .action-row {
             display: flex;
-            gap: 6px;
+            gap: 8px;
             align-items: center;
             margin-top: 8px;
             flex-wrap: wrap;
         }
 
         .unit-qty-input {
-            width: 52px;
-            padding: 6px 4px;
-            font-size: 11px;
+            width: 58px;
+            padding: 7px 4px;
+            font-size: 12px;
             border: 1px solid #cbd5e1;
             border-radius: 6px;
             text-align: center;
@@ -390,13 +411,13 @@
             background-color: #0284c7;
             color: white;
             border: none;
-            padding: 7px 12px;
+            padding: 8px 14px;
             border-radius: 6px;
-            font-size: 11px;
+            font-size: 12px;
             font-weight: 700;
             cursor: pointer;
             flex: 1;
-            min-width: 90px;
+            min-width: 95px;
             text-align: center;
             transition: background 0.2s;
         }
@@ -408,49 +429,49 @@
         .admin-panel {
             display: none;
             flex-direction: column;
-            gap: 10px;
+            gap: 14px;
         }
 
         .admin-card {
             background: #fff;
-            padding: 12px;
-            border-radius: 10px;
+            padding: 16px;
+            border-radius: 12px;
             border: 1px solid #e2e8f0;
         }
 
         .admin-card h4 {
-            font-size: 12px;
-            margin-bottom: 8px;
+            font-size: 13.5px;
+            margin-bottom: 10px;
             color: #0f172a;
             display: flex;
             align-items: center;
             gap: 6px;
         }
 
-        /* --- شبكة لوحة مؤشرات الأداء KPIs --- */
+        /* --- لوحة مؤشرات الأداء KPIs --- */
         .kpi-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 8px;
-            margin-bottom: 10px;
+            gap: 12px;
+            margin-bottom: 12px;
         }
 
         .kpi-card {
             background: #f8fafc;
             border: 1px solid #cbd5e1;
-            padding: 10px;
-            border-radius: 8px;
+            padding: 14px;
+            border-radius: 10px;
             text-align: center;
         }
 
         .kpi-card .val {
-            font-size: 15px;
+            font-size: 18px;
             font-weight: 800;
             color: #0284c7;
         }
 
         .kpi-card .lbl {
-            font-size: 9.5px;
+            font-size: 11px;
             color: #64748b;
             font-weight: 700;
         }
@@ -458,13 +479,13 @@
         .file-upload-btn {
             display: block;
             width: 100%;
-            padding: 8px;
+            padding: 10px;
             background: #f1f5f9;
             border: 1px dashed #0284c7;
             color: #0284c7;
             text-align: center;
-            border-radius: 6px;
-            font-size: 11px;
+            border-radius: 8px;
+            font-size: 12px;
             font-weight: 700;
             cursor: pointer;
             margin-bottom: 8px;
@@ -475,11 +496,11 @@
             background: #16a34a;
             color: white;
             border: none;
-            padding: 8px;
-            border-radius: 6px;
+            padding: 10px;
+            border-radius: 8px;
             font-weight: 700;
             cursor: pointer;
-            font-size: 11px;
+            font-size: 12.5px;
             text-align: center;
         }
 
@@ -491,9 +512,9 @@
             background: #f59e0b;
             color: white;
             border: none;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 10px;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 11.5px;
             font-weight: 700;
             cursor: pointer;
         }
@@ -502,9 +523,9 @@
             background: #ef4444;
             color: white;
             border: none;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 10px;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 11.5px;
             font-weight: 700;
             cursor: pointer;
         }
@@ -519,13 +540,13 @@
             width: 100%;
             border-collapse: collapse;
             margin-top: 6px;
-            min-width: 280px;
+            min-width: 320px;
         }
 
         .report-table th, .report-table td {
             border: 1px solid #e2e8f0;
-            padding: 6px 4px;
-            font-size: 10px;
+            padding: 9px 6px;
+            font-size: 11.5px;
             text-align: center;
         }
 
@@ -546,7 +567,7 @@
             z-index: 150;
             justify-content: center;
             align-items: center;
-            padding: 12px;
+            padding: 16px;
         }
 
         .image-viewer-modal {
@@ -561,7 +582,7 @@
             flex-direction: column;
             justify-content: space-between;
             align-items: center;
-            padding: 16px 12px;
+            padding: 18px 14px;
         }
 
         .gallery-header {
@@ -574,7 +595,7 @@
         }
 
         .gallery-title {
-            font-size: 14px;
+            font-size: 16px;
             font-weight: 700;
             color: #38bdf8;
         }
@@ -595,12 +616,12 @@
             justify-content: space-between;
             width: 100%;
             flex: 1;
-            gap: 8px;
+            gap: 10px;
         }
 
         .gallery-img-container {
             flex: 1;
-            max-height: 65vh;
+            max-height: 72vh;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -609,7 +630,7 @@
 
         .gallery-img {
             max-width: 100%;
-            max-height: 52vh;
+            max-height: 58vh;
             border-radius: 12px;
             box-shadow: 0 8px 25px rgba(0,0,0,0.5);
             object-fit: contain;
@@ -618,11 +639,11 @@
 
         .gallery-caption {
             color: #cbd5e1;
-            font-size: 11px;
+            font-size: 12.5px;
             margin-top: 12px;
             text-align: center;
             background: rgba(30, 41, 59, 0.8);
-            padding: 6px 12px;
+            padding: 8px 14px;
             border-radius: 8px;
             width: 100%;
         }
@@ -631,11 +652,11 @@
             background: rgba(255, 255, 255, 0.15);
             color: white;
             border: none;
-            width: 40px;
-            height: 40px;
+            width: 46px;
+            height: 46px;
             border-radius: 50%;
             cursor: pointer;
-            font-size: 16px;
+            font-size: 18px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -650,19 +671,25 @@
         .invoice-box {
             background: white;
             width: 100%;
-            max-width: 420px;
-            max-height: 90vh;
+            max-width: 500px;
+            max-height: 94vh;
             border-radius: 16px;
-            padding: 14px;
+            padding: 18px;
             overflow-y: auto;
-            font-size: 11px;
+            font-size: 12.5px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+
+        @media (min-width: 768px) {
+            .invoice-box {
+                max-width: 650px;
+            }
         }
 
         .styled-invoice {
             border: 2px solid #0284c7;
-            border-radius: 8px;
-            padding: 10px;
+            border-radius: 10px;
+            padding: 14px;
             background: #ffffff;
         }
 
@@ -671,66 +698,66 @@
             justify-content: space-between;
             align-items: center;
             border-bottom: 2px solid #0284c7;
-            padding-bottom: 8px;
-            margin-bottom: 8px;
+            padding-bottom: 10px;
+            margin-bottom: 12px;
         }
 
         .inv-brand h2 {
             color: #0284c7;
-            font-size: 15px;
+            font-size: 17px;
             font-weight: 800;
         }
 
         .inv-brand p {
-            font-size: 8px;
+            font-size: 9.5px;
             color: #64748b;
         }
 
         .inv-details-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 4px 8px;
+            gap: 6px 12px;
             background: #f8fafc;
-            padding: 8px;
-            border-radius: 6px;
-            margin-bottom: 8px;
-            font-size: 9.5px;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            font-size: 11px;
         }
 
         .inv-table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 8px;
+            margin-bottom: 12px;
         }
 
         .inv-table th {
             background: #0284c7;
             color: white;
-            padding: 5px 2px;
-            font-size: 9.5px;
+            padding: 7px 4px;
+            font-size: 11px;
         }
 
         .inv-table td {
             border-bottom: 1px solid #e2e8f0;
-            padding: 5px 2px;
+            padding: 7px 4px;
             text-align: center;
-            font-size: 9.5px;
+            font-size: 11px;
         }
 
         .inv-total-box {
             background: #0f172a;
             color: white;
-            padding: 8px 10px;
-            border-radius: 6px;
+            padding: 10px 14px;
+            border-radius: 8px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-size: 11px;
+            font-size: 13px;
             font-weight: 700;
         }
 
         .bottom-nav {
-            height: 56px;
+            height: 62px;
             background-color: #ffffff;
             border-top: 1px solid #e2e8f0;
             display: flex;
@@ -745,7 +772,7 @@
             flex-direction: column;
             align-items: center;
             color: #64748b;
-            font-size: 10px;
+            font-size: 11px;
             cursor: pointer;
             flex: 1;
             padding: 6px 0;
@@ -758,43 +785,8 @@
         }
 
         .nav-item i {
-            font-size: 17px;
+            font-size: 20px;
             margin-bottom: 2px;
-        }
-
-        /* --- Toast Notification System --- */
-        .toast-container {
-            position: absolute;
-            bottom: 65px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 500;
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            pointer-events: none;
-            width: 90%;
-            max-width: 380px;
-        }
-
-        .toast-message {
-            background: #1e293b;
-            color: #fff;
-            padding: 10px 14px;
-            border-radius: 8px;
-            font-size: 11px;
-            font-weight: 700;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            border-right: 4px solid #0284c7;
-            animation: fadeIn 0.3s ease forwards;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
         }
 
         @media print {
@@ -813,9 +805,6 @@
 
     <div class="app-container">
         
-        <!-- Toast Container -->
-        <div class="toast-container" id="toastContainer"></div>
-
         <!-- شريط حالة الاتصال -->
         <div class="network-banner" id="networkBanner">
             <i class="fa-solid fa-wifi"></i> وضع أوفلاين: يتم حفظ وتصفح المبيعات محلياً
@@ -837,14 +826,14 @@
                 <div class="login-form" id="repLoginForm">
                     <label>اسم المندوب:</label>
                     <input type="text" id="loginRepNameInput" class="form-input" placeholder="اكتب اسم المندوب..." style="background:#0f172a; color:#fff; border-color:#334155;">
-                    <button class="btn-submit" style="background:#0284c7; margin-top:6px; padding:10px;" onclick="loginAsRep()">تسجيل الدخول والتطبيق</button>
+                    <button class="btn-submit" style="background:#0284c7; margin-top:8px; padding:12px;" onclick="loginAsRep()">تسجيل الدخول والتطبيق</button>
                 </div>
 
                 <!-- نموذج دخول المدير -->
                 <div class="login-form" id="adminLoginForm" style="display:none;">
                     <label>رمز مرور لوحة التحكم:</label>
                     <input type="password" id="adminPasswordInput" class="form-input" placeholder="ادخل كلمة المرور..." style="background:#0f172a; color:#fff; border-color:#334155;">
-                    <button class="btn-submit" style="background:#16a34a; margin-top:6px; padding:10px;" onclick="loginAsAdmin()">دخول لوحة الإدارة</button>
+                    <button class="btn-submit" style="background:#16a34a; margin-top:8px; padding:12px;" onclick="loginAsAdmin()">دخول لوحة الإدارة</button>
                 </div>
             </div>
         </div>
@@ -888,7 +877,7 @@
             </div>
         </div>
 
-        <!-- معروض الأيتمات بالصور (للمدير والمندوب) -->
+        <!-- معروض الأيتمات بالصور -->
         <main class="content" id="repView">
             <div id="productList"></div>
         </main>
@@ -906,39 +895,39 @@
                 </div>
             </div>
 
-            <!-- إدارة وتعديل الأدوية المضافة -->
-            <div class="admin-card">
-                <h4><i class="fa-solid fa-boxes-stacked"></i> قائمة الأدوية المضافة (إدارة وتعديل)</h4>
-                <div class="table-responsive">
-                    <table class="report-table">
-                        <thead>
-                            <tr>
-                                <th>اسم الدواء</th>
-                                <th>الشركة</th>
-                                <th>السعر</th>
-                                <th>البونص</th>
-                                <th>إجراءات</th>
-                            </tr>
-                        </thead>
-                        <tbody id="adminProductsTableBody"></tbody>
-                    </table>
+            <div class="admin-cards-grid">
+                <!-- إدارة الأدوية المضافة -->
+                <div class="admin-card">
+                    <h4><i class="fa-solid fa-boxes-stacked"></i> قائمة الأدوية المضافة</h4>
+                    <div class="table-responsive">
+                        <table class="report-table">
+                            <thead>
+                                <tr>
+                                    <th>الدواء</th>
+                                    <th>السعر</th>
+                                    <th>إجراءات</th>
+                                </tr>
+                            </thead>
+                            <tbody id="adminProductsTableBody"></tbody>
+                        </table>
+                    </div>
                 </div>
-            </div>
 
-            <!-- إدارة المندوبين -->
-            <div class="admin-card">
-                <h4><i class="fa-solid fa-users"></i> إدارة قائمة المندوبين المسجلين</h4>
-                <div class="table-responsive">
-                    <table class="report-table">
-                        <thead>
-                            <tr>
-                                <th>اسم المندوب</th>
-                                <th>المحافظة</th>
-                                <th>حذف</th>
-                            </tr>
-                        </thead>
-                        <tbody id="adminRepsTableBody"></tbody>
-                    </table>
+                <!-- إدارة المندوبين -->
+                <div class="admin-card">
+                    <h4><i class="fa-solid fa-users"></i> المندوبين المسجلين</h4>
+                    <div class="table-responsive">
+                        <table class="report-table">
+                            <thead>
+                                <tr>
+                                    <th>المندوب</th>
+                                    <th>المحافظة</th>
+                                    <th>حذف</th>
+                                </tr>
+                            </thead>
+                            <tbody id="adminRepsTableBody"></tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
 
@@ -972,23 +961,25 @@
                 <button class="btn-submit" style="background:#0284c7;" onclick="saveFirebaseConfig()">حفظ والربط مع Firebase</button>
             </div>
 
-            <!-- تغيير اسم المكتب -->
-            <div class="admin-card">
-                <h4><i class="fa-solid fa-hospital-user"></i> تغيير اسم المكتب العلمي</h4>
-                <input type="text" id="officeNameInput" class="form-input" placeholder="ادخل اسم المكتب العلمي جديد..." style="margin-bottom:6px;">
-                <button class="btn-submit" onclick="updateOfficeName()">حفظ اسم المكتب</button>
-            </div>
+            <div class="admin-cards-grid">
+                <!-- تغيير اسم المكتب -->
+                <div class="admin-card">
+                    <h4><i class="fa-solid fa-hospital-user"></i> تغيير اسم المكتب العلمي</h4>
+                    <input type="text" id="officeNameInput" class="form-input" placeholder="اسم جديد..." style="margin-bottom:6px;">
+                    <button class="btn-submit" onclick="updateOfficeName()">حفظ اسم المكتب</button>
+                </div>
 
-            <!-- تغيير رمز مرور المدير -->
-            <div class="admin-card">
-                <h4><i class="fa-solid fa-key"></i> تغيير رمز مرور المدير</h4>
-                <input type="password" id="newAdminPassword" class="form-input" placeholder="رمز المرور الجديد..." style="margin-bottom:6px;">
-                <button class="btn-submit" onclick="updateAdminPassword()">حفظ الرمز الجديد</button>
+                <!-- تغيير رمز مرور المدير -->
+                <div class="admin-card">
+                    <h4><i class="fa-solid fa-key"></i> تغيير رمز مرور المدير</h4>
+                    <input type="password" id="newAdminPassword" class="form-input" placeholder="الرمز الجديد..." style="margin-bottom:6px;">
+                    <button class="btn-submit" onclick="updateAdminPassword()">حفظ الرمز الجديد</button>
+                </div>
             </div>
 
             <div class="admin-card">
                 <h4><i class="fa-solid fa-bullhorn"></i> إدارة شريط الإعلانات المتحرك</h4>
-                <input type="text" id="newsInput" class="form-input" placeholder="اكتب نص الإعلان الذي يظهر أعلى التطبيق..." style="margin-bottom:6px;">
+                <input type="text" id="newsInput" class="form-input" placeholder="اكتب نص الإعلان المتحرك..." style="margin-bottom:6px;">
                 <button class="btn-submit" onclick="updateNewsTicker()">تحديث الإعلان الآن</button>
             </div>
 
@@ -1012,18 +1003,20 @@
                 </div>
             </div>
 
-            <div class="admin-card">
-                <h4><i class="fa-solid fa-user-plus"></i> إضافة وتعيين مندوب لمحافظة</h4>
-                <input type="text" id="newRepName" class="form-input" placeholder="اسم المندوب الثلاثي" style="margin-bottom:6px;">
-                <select class="custom-select" id="adminRepProvinceSelect" style="margin-bottom:6px;"></select>
-                <button class="btn-submit" onclick="addMedicalRep()">حفظ المندوب</button>
-            </div>
+            <div class="admin-cards-grid">
+                <div class="admin-card">
+                    <h4><i class="fa-solid fa-user-plus"></i> إضافة وتعيين مندوب لمحافظة</h4>
+                    <input type="text" id="newRepName" class="form-input" placeholder="اسم المندوب الثلاثي" style="margin-bottom:6px;">
+                    <select class="custom-select" id="adminRepProvinceSelect" style="margin-bottom:6px;"></select>
+                    <button class="btn-submit" onclick="addMedicalRep()">حفظ المندوب</button>
+                </div>
 
-            <div class="admin-card">
-                <h4><i class="fa-solid fa-building-ngo"></i> إضافة مذخر جديد</h4>
-                <select class="custom-select" id="adminProvinceSelect" style="margin-bottom:6px;"></select>
-                <input type="text" id="newWarehouseName" class="form-input" placeholder="اسم المذخر" style="margin-bottom:6px;">
-                <button class="btn-submit" onclick="addWarehouse()">حفظ المذخر</button>
+                <div class="admin-card">
+                    <h4><i class="fa-solid fa-building-ngo"></i> إضافة مذخر جديد</h4>
+                    <select class="custom-select" id="adminProvinceSelect" style="margin-bottom:6px;"></select>
+                    <input type="text" id="newWarehouseName" class="form-input" placeholder="اسم المذخر" style="margin-bottom:6px;">
+                    <button class="btn-submit" onclick="addWarehouse()">حفظ المذخر</button>
+                </div>
             </div>
 
             <div class="admin-card">
@@ -1038,10 +1031,10 @@
                 <input type="text" id="newBonus" class="form-input" placeholder="عروض البونص (مثال: 10+2)" style="margin-bottom:6px;">
                 
                 <label for="drugImageInput" class="file-upload-btn">
-                    <i class="fa-solid fa-camera"></i> رفع صورة الدواء من الهاتف
+                    <i class="fa-solid fa-camera"></i> رفع صورة الدواء من الجهاز
                 </label>
                 <input type="file" id="drugImageInput" accept="image/*" style="display: none;" onchange="previewImageName(this)">
-                <span id="fileNameDisplay" style="font-size:10px; color:#16a34a; display:block; margin-bottom:6px;"></span>
+                <span id="fileNameDisplay" style="font-size:11.5px; color:#16a34a; display:block; margin-bottom:6px;"></span>
 
                 <button class="btn-submit" onclick="addDrug()">إضافة الدواء لقائمة الأدوية</button>
             </div>
@@ -1065,34 +1058,34 @@
         <!-- نافذة تعديل دواء -->
         <div class="modal" id="editDrugModal">
             <div class="invoice-box">
-                <h3 style="text-align:center; margin-bottom:10px; color:#0284c7; font-size:13px;">تعديل بيانات الدواء</h3>
+                <h3 style="text-align:center; margin-bottom:12px; color:#0284c7; font-size:15px;">تعديل بيانات الدواء</h3>
                 <input type="hidden" id="editDrugId">
-                <label style="font-size:10px; font-weight:bold;">اسم الدواء:</label>
+                <label style="font-size:11.5px; font-weight:bold;">اسم الدواء:</label>
                 <input type="text" id="editDrugName" class="form-input" style="margin-bottom:6px;">
-                <label style="font-size:10px; font-weight:bold;">الشركة المصنعة:</label>
+                <label style="font-size:11.5px; font-weight:bold;">الشركة المصنعة:</label>
                 <input type="text" id="editCompany" class="form-input" style="margin-bottom:6px;">
                 <div style="display:flex; gap:6px; margin-bottom:6px;">
                     <div style="flex:1;">
-                        <label style="font-size:10px; font-weight:bold;">الوحدة:</label>
+                        <label style="font-size:11.5px; font-weight:bold;">الوحدة:</label>
                         <input type="text" id="editUnitName" class="form-input">
                     </div>
                     <div style="flex:1;">
-                        <label style="font-size:10px; font-weight:bold;">السعر:</label>
+                        <label style="font-size:11.5px; font-weight:bold;">السعر:</label>
                         <input type="number" id="editUnitPrice" class="form-input">
                     </div>
                 </div>
-                <label style="font-size:10px; font-weight:bold;">تاريخ الاكسباير:</label>
+                <label style="font-size:11.5px; font-weight:bold;">تاريخ الاكسباير:</label>
                 <input type="text" id="editExpire" class="form-input" style="margin-bottom:6px;">
-                <label style="font-size:10px; font-weight:bold;">عرض البونص:</label>
-                <input type="text" id="editBonus" class="form-input" style="margin-bottom:6px;">
+                <label style="font-size:11.5px; font-weight:bold;">عرض البونص:</label>
+                <input type="text" id="editBonus" class="form-input" style="margin-bottom:8px;">
 
                 <label for="editDrugImageInput" class="file-upload-btn">
                     <i class="fa-solid fa-camera"></i> تغيير صورة الدواء
                 </label>
                 <input type="file" id="editDrugImageInput" accept="image/*" style="display: none;" onchange="previewEditImageName(this)">
-                <span id="editFileNameDisplay" style="font-size:10px; color:#16a34a; display:block; margin-bottom:6px;"></span>
+                <span id="editFileNameDisplay" style="font-size:11.5px; color:#16a34a; display:block; margin-bottom:8px;"></span>
                 
-                <div style="display: flex; gap: 6px;">
+                <div style="display: flex; gap: 8px;">
                     <button class="btn-submit" style="background:#16a34a;" onclick="saveEditedDrug()">حفظ التعديلات</button>
                     <button class="btn-submit" style="background:#64748b;" onclick="closeEditModal()">إلغاء</button>
                 </div>
@@ -1102,10 +1095,10 @@
         <!-- نافذة السلة -->
         <div class="modal" id="cartModal">
             <div class="invoice-box">
-                <h3 style="text-align:center; margin-bottom:10px; color:#0284c7; font-size:14px;">طلب مبيعات الصيدلية</h3>
+                <h3 style="text-align:center; margin-bottom:12px; color:#0284c7; font-size:16px;">طلب مبيعات الصيدلية</h3>
                 
                 <input type="text" id="pharmacyNameInput" class="form-input" placeholder="اسم الصيدلية" style="margin-bottom:6px;">
-                <input type="tel" id="pharmacyPhoneInput" class="form-input" placeholder="رقم هاتف الصيدلية (لإرسال واتساب)" style="margin-bottom:10px;">
+                <input type="tel" id="pharmacyPhoneInput" class="form-input" placeholder="رقم هاتف الصيدلية (لإرسال واتساب)" style="margin-bottom:12px;">
 
                 <div class="table-responsive">
                     <table class="report-table">
@@ -1122,11 +1115,11 @@
                     </table>
                 </div>
 
-                <div style="font-weight:bold; font-size:12px; margin-top:10px; text-align:left;">
+                <div style="font-weight:bold; font-size:13.5px; margin-top:12px; text-align:left;">
                     الإجمالي: <span id="cartTotal" style="color:#16a34a;">0</span> د.ع
                 </div>
 
-                <div style="margin-top: 12px; display: flex; gap: 6px;">
+                <div style="margin-top: 14px; display: flex; gap: 8px;">
                     <button class="btn-submit" style="background:#0284c7;" onclick="checkout()">تأكيد وإصدار الفاتورة</button>
                     <button class="btn-submit" style="background:#64748b;" onclick="closeCart()">إغلاق</button>
                 </div>
@@ -1149,7 +1142,7 @@
                 <button class="nav-arrow-btn" onclick="nextGalleryImage()"><i class="fa-solid fa-chevron-left"></i></button>
             </div>
 
-            <div style="color:#94a3b8; font-size:11px; margin-top:4px;" id="galleryCounter">1 من 1</div>
+            <div style="color:#94a3b8; font-size:12.5px; margin-top:6px;" id="galleryCounter">1 من 1</div>
         </div>
 
         <!-- نافذة الفاتورة -->
@@ -1162,7 +1155,7 @@
                             <p>Scientific Bureau for Pharmaceutical Supplies</p>
                         </div>
                         <div style="text-align:left;">
-                            <span style="font-size:8.5px; background:#e0f2fe; color:#0369a1; padding:2px 6px; border-radius:4px; font-weight:bold;">فاتورة رسمية</span>
+                            <span style="font-size:9.5px; background:#e0f2fe; color:#0369a1; padding:2px 8px; border-radius:4px; font-weight:bold;">فاتورة رسمية</span>
                         </div>
                     </div>
 
@@ -1196,17 +1189,17 @@
                         <span id="invFinalTotal">0 د.ع</span>
                     </div>
 
-                    <p style="text-align:center; font-size:8px; color:#94a3b8; margin-top:8px;">ملاحظة: البونص يحسب مجاناً وفق السياسة التسويقية المعتمدة للمكتب العلمي.</p>
+                    <p style="text-align:center; font-size:9px; color:#94a3b8; margin-top:8px;">ملاحظة: البونص يحسب مجاناً وفق السياسة التسويقية المعتمدة للمكتب العلمي.</p>
                 </div>
 
-                <div style="margin-top:10px;">
-                    <button class="btn-submit" style="background:#0284c7; margin-bottom:4px;" onclick="directPrint()">
+                <div style="margin-top:14px;">
+                    <button class="btn-submit" style="background:#0284c7; margin-bottom:6px;" onclick="directPrint()">
                         <i class="fa-solid fa-print"></i> طباعة الفاتورة المباشرة
                     </button>
-                    <button class="btn-submit" style="background:#10b981; margin-bottom:4px;" onclick="downloadPDF()">
+                    <button class="btn-submit" style="background:#10b981; margin-bottom:6px;" onclick="downloadPDF()">
                         <i class="fa-solid fa-file-pdf"></i> تحميل ملف PDF
                     </button>
-                    <button class="btn-submit" style="background:#25d366; margin-bottom:4px;" onclick="sendWhatsApp()">
+                    <button class="btn-submit" style="background:#25d366; margin-bottom:6px;" onclick="sendWhatsApp()">
                         <i class="fa-brands fa-whatsapp"></i> إرسال عبر واتساب
                     </button>
                     <button class="btn-submit" style="background:#dc2626;" onclick="closeInvoice()">إغلاق</button>
@@ -1217,25 +1210,11 @@
     </div>
 
     <script>
-        // نظام التنبيهات الشفافة (Toast Notifications)
-        function showToast(msg, icon = 'fa-check-circle') {
-            const container = document.getElementById('toastContainer');
-            const toast = document.createElement('div');
-            toast.className = 'toast-message';
-            toast.innerHTML = `<i class="fa-solid ${icon}"></i> <span>${msg}</span>`;
-            container.appendChild(toast);
-            setTimeout(() => {
-                toast.style.opacity = '0';
-                toast.style.transition = 'opacity 0.3s ease';
-                setTimeout(() => toast.remove(), 300);
-            }, 2500);
-        }
-
-        // تسجيل Service Worker للعمل أوفلاين كلياً
+        // تسجيل Service Worker للعمل أوفلاين
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 const swCode = `
-                    const CACHE_NAME = 'scientific-office-v5';
+                    const CACHE_NAME = 'scientific-office-v6';
                     const urlsToCache = [
                         './',
                         'https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap',
@@ -1286,7 +1265,6 @@
             });
         }
 
-        // مراقبة حالة الاتصال أوفلاين/أونلاين
         window.addEventListener('online', updateNetworkStatus);
         window.addEventListener('offline', updateNetworkStatus);
 
@@ -1296,7 +1274,6 @@
                 banner.classList.add('offline');
             } else {
                 banner.classList.remove('offline');
-                syncFromFirebase(); // إجبار المزامنة مجدداً فور رجوع الاتصال
             }
         }
 
@@ -1307,7 +1284,6 @@
         ];
 
         let db = null;
-
         let currentRole = 'REP';
         let currentUser = null;
         let uploadedImageData = '';
@@ -1340,7 +1316,6 @@
         let cart = [];
         let currentInvoiceData = null;
 
-        // تهيئة Firebase
         function initFirebase() {
             const configStr = localStorage.getItem('firebaseConfig');
             if (configStr) {
@@ -1369,8 +1344,8 @@
                 appId: document.getElementById('fbAppId').value.trim()
             };
             localStorage.setItem('firebaseConfig', JSON.stringify(cfg));
-            showToast('تم حفظ إعدادات Firebase بنجاح!');
-            setTimeout(() => location.reload(), 1000);
+            alert('تم حفظ إعدادات Firebase! سيتم إعادة تحميل البيانات...');
+            location.reload();
         }
 
         function loadFirebaseInputs(cfg) {
@@ -1385,7 +1360,7 @@
         }
 
         function syncFromFirebase() {
-            if (!db || !navigator.onLine) return;
+            if (!db) return;
             db.ref('appData').on('value', (snapshot) => {
                 const data = snapshot.val();
                 if (data) {
@@ -1419,20 +1394,13 @@
             localStorage.setItem('officeName', officeName);
             localStorage.setItem('adminPass', adminPass);
 
-            if (syncToFb && db && navigator.onLine) {
+            if (syncToFb && db) {
                 db.ref('appData').set({
-                    products,
-                    warehouses,
-                    medicalReps,
-                    salesHistory,
-                    newsTickerText,
-                    officeName,
-                    adminPass
+                    products, warehouses, medicalReps, salesHistory, newsTickerText, officeName, adminPass
                 });
             }
         }
 
-        /* --- التحكم بنظام تسجيل الدخول --- */
         function switchLoginTab(tab) {
             if(tab === 'REP') {
                 document.getElementById('tabRepBtn').classList.add('active');
@@ -1449,12 +1417,11 @@
 
         function loginAsRep() {
             const repNameInput = document.getElementById('loginRepNameInput').value.trim();
-            if(!repNameInput) return showToast('يرجى إدخال اسم المندوب أولاً!', 'fa-exclamation-triangle');
+            if(!repNameInput) return alert('يرجى إدخال اسم المندوب أولاً!');
             
             const foundRep = medicalReps.find(r => r.name.trim() === repNameInput);
-            
             if (!foundRep) {
-                showToast('هذا الاسم غير مسجل ضمن المندوبين المعتمدين!', 'fa-user-slash');
+                alert('عذراً، هذا الاسم غير مسجل ضمن قائمة المندوبين المعتمدين!');
                 return;
             }
 
@@ -1465,7 +1432,6 @@
             document.getElementById('repView').style.display = 'block';
             document.getElementById('adminView').style.display = 'none';
             document.getElementById('filterSection').style.display = 'flex';
-            
             document.getElementById('navAdminTabBtn').style.display = 'none';
             
             if(document.getElementById('provinceSelect')) {
@@ -1475,13 +1441,12 @@
 
             document.getElementById('appHeaderTitle').innerText = `${officeName} - معرض الأدوية`;
             document.getElementById('loginScreen').style.display = 'none';
-            showToast(`أهلاً بك المندوب ${foundRep.name}`);
             switchTab('home');
         }
 
         function loginAsAdmin() {
             const pass = document.getElementById('adminPasswordInput').value;
-            if(pass !== adminPass) return showToast('رمز المرور غير صحيح!', 'fa-lock');
+            if(pass !== adminPass) return alert('رمز المرور غير صحيح!');
 
             currentRole = 'ADMIN';
             currentUser = { name: "المدير العام" };
@@ -1490,7 +1455,6 @@
             document.getElementById('repView').style.display = 'block';
             document.getElementById('adminView').style.display = 'none';
             document.getElementById('filterSection').style.display = 'flex';
-            
             document.getElementById('navAdminTabBtn').style.display = 'flex';
             document.getElementById('appHeaderTitle').innerText = `${officeName} - معرض الأدوية`;
 
@@ -1501,7 +1465,6 @@
             filterProducts();
             document.getElementById('loginScreen').style.display = 'none';
             document.getElementById('adminPasswordInput').value = '';
-            showToast('تم تسجيل الدخول بصلاحيات المدير');
             switchTab('home');
         }
 
@@ -1510,7 +1473,6 @@
             currentUser = null;
             document.getElementById('navAdminTabBtn').style.display = 'none';
             document.getElementById('loginScreen').style.display = 'flex';
-            showToast('تم تسجيل الخروج');
         }
 
         function switchTab(tab) {
@@ -1523,7 +1485,7 @@
                 document.getElementById('appHeaderTitle').innerText = `${officeName} - معرض الأدوية`;
             } else if (tab === 'admin') {
                 if (currentRole !== 'ADMIN') {
-                    showToast('هذه اللوحة مخصصة للمدير العام فقط!', 'fa-shield-halved');
+                    alert('عذراً، هذه اللوحة مخصصة للمدير العام فقط!');
                     return;
                 }
                 document.getElementById('navAdminTabBtn').classList.add('active');
@@ -1540,10 +1502,10 @@
             if(newP.trim() !== '') {
                 adminPass = newP;
                 saveDataLocal();
-                showToast('تم تغيير رمز مرور الإدارة بنجاح!');
+                alert('تم تغيير رمز مرور الإدارة بنجاح!');
                 document.getElementById('newAdminPassword').value = '';
             } else {
-                showToast('ادخل رمز المرور الجديد', 'fa-triangle-exclamation');
+                alert('ادخل رمز المرور الجديد');
             }
         }
 
@@ -1553,9 +1515,9 @@
                 officeName = inputVal;
                 applyOfficeName();
                 saveDataLocal();
-                showToast('تم تحديث اسم المكتب العلمي بنجاح!');
+                alert('تم تحديث اسم المكتب العلمي بنجاح!');
             } else {
-                showToast('يرجى كتابة اسم المكتب', 'fa-triangle-exclamation');
+                alert('يرجى كتابة اسم المكتب');
             }
         }
 
@@ -1574,10 +1536,10 @@
                 newsTickerText = inputVal;
                 document.getElementById('tickerDisplay').innerText = newsTickerText;
                 saveDataLocal();
-                showToast('تم تحديث شريط الإعلانات بنجاح!');
+                alert('تم تحديث شريط الإعلانات بنجاح!');
                 document.getElementById('newsInput').value = '';
             } else {
-                showToast('يرجى إدخال نص الإعلان أولاً', 'fa-triangle-exclamation');
+                alert('يرجى إدخال نص الإعلان أولاً');
             }
         }
 
@@ -1615,10 +1577,10 @@
                 saveDataLocal();
                 initProvincesAndReps();
                 renderAdminReps();
-                showToast(`تم تسجيل المندوب ${name}`);
+                alert(`تم تسجيل المندوب ${name} لمحافظة ${prov}`);
                 document.getElementById('newRepName').value = '';
             } else {
-                showToast('ادخل اسم المندوب واختر المحافظة', 'fa-triangle-exclamation');
+                alert('ادخل اسم المندوب واختر المحافظة');
             }
         }
 
@@ -1643,7 +1605,6 @@
                 saveDataLocal();
                 renderAdminReps();
                 loadMonthlyReport();
-                showToast('تم حذف المندوب');
             }
         }
 
@@ -1671,7 +1632,6 @@
                 saveDataLocal();
                 renderAdminWarehouses();
                 loadWarehouses();
-                showToast('تم حذف المذخر');
             }
         }
 
@@ -1703,13 +1663,12 @@
         }
 
         function exportReportToExcel() {
-            if (typeof XLSX === 'undefined') return showToast('جار تحميل مكتبة Excel...', 'fa-hourglass');
+            if (typeof XLSX === 'undefined') return alert('جار تحميل مكتبة Excel...');
             const table = document.getElementById('reportTable');
             const wb = XLSX.utils.table_to_book(table, { sheet: "تقرير المبيعات" });
             XLSX.writeFile(wb, "تقرير_مبيعات_المكتب_العلمي.xlsx");
         }
 
-        /* --- إدارة وحذف وتعديل الأدوية --- */
         function renderAdminProducts() {
             const tbody = document.getElementById('adminProductsTableBody');
             if(!tbody) return;
@@ -1719,9 +1678,7 @@
                 tbody.innerHTML += `
                     <tr>
                         <td><b>${p.name}</b></td>
-                        <td>${p.company}</td>
                         <td>${p.unitPrice.toLocaleString()} د.ع</td>
-                        <td>${p.bonus || 'بلا بونص'}</td>
                         <td>
                             <div style="display:flex; gap:4px; justify-content:center;">
                                 <button class="btn-edit-item" onclick="openEditDrugModal(${p.id})"><i class="fa-solid fa-pen"></i></button>
@@ -1739,7 +1696,7 @@
                 saveDataLocal();
                 filterProducts();
                 renderAdminProducts();
-                showToast('تم حذف الدواء بنجاح');
+                alert('تم حذف الدواء بنجاح');
             }
         }
 
@@ -1784,7 +1741,7 @@
             filterProducts();
             renderAdminProducts();
             closeEditModal();
-            showToast('تم حفظ تعديلات الدواء بنجاح');
+            alert('تم حفظ تعديلات الدواء بنجاح');
         }
 
         function calculateAutoBonus(bonusStr, qty) {
@@ -1801,34 +1758,31 @@
             const list = document.getElementById('productList');
             list.innerHTML = '';
             if (items.length === 0) {
-                list.innerHTML = '<div style="text-align:center; color:#94a3b8; padding:30px 10px; font-size:12px;"><i class="fa-solid fa-box-open" style="font-size:28px; margin-bottom:8px; display:block;"></i>لا توجد أدوية مطابقة للبحث</div>';
+                list.innerHTML = '<div style="text-align:center; color:#94a3b8; padding:35px 10px; font-size:13px; grid-column: 1/-1;"><i class="fa-solid fa-box-open" style="font-size:36px; margin-bottom:8px; display:block;"></i>لا توجد أدوية مطابقة للبحث</div>';
                 return;
             }
-            const fragment = document.createDocumentFragment();
             items.forEach((p, index) => {
-                const card = document.createElement('div');
-                card.className = 'product-card';
-                card.innerHTML = `
-                    ${p.bonus && p.bonus !== 'بلا بونص' ? `<span class="bonus-tag">بونص ${p.bonus}</span>` : ''}
-                    <img src="${p.img}" class="product-img" alt="${p.name}" onclick="openGallery(${index})" title="انقر لتكبير الصورة وتصفح المعرض">
-                    <div class="product-info">
-                        <div>
-                            <div class="product-name">${p.name}</div>
-                            <div class="company-badge">${p.company}</div>
-                            <div class="product-meta">Nf: ${p.expire}</div>
-                            <div class="price-box">
-                                سعر الـ (${p.unitName}): ${p.unitPrice.toLocaleString()} د.ع
+                list.innerHTML += `
+                    <div class="product-card">
+                        ${p.bonus && p.bonus !== 'بلا بونص' ? `<span class="bonus-tag">بونص ${p.bonus}</span>` : ''}
+                        <img src="${p.img}" class="product-img" alt="${p.name}" onclick="openGallery(${index})" title="انقر لتكبير الصورة">
+                        <div class="product-info">
+                            <div>
+                                <div class="product-name">${p.name}</div>
+                                <div class="company-badge">${p.company}</div>
+                                <div class="product-meta">Nf: ${p.expire}</div>
+                                <div class="price-box">
+                                    سعر الـ (${p.unitName}): ${p.unitPrice.toLocaleString()} د.ع
+                                </div>
                             </div>
-                        </div>
-                        <div class="action-row">
-                            <input type="number" class="unit-qty-input" id="qty-${p.id}" value="1" min="1">
-                            <button class="btn-add" onclick="addToCart(${p.id})">+ إضافة بالوحدة</button>
+                            <div class="action-row">
+                                <input type="number" class="unit-qty-input" id="qty-${p.id}" value="1" min="1">
+                                <button class="btn-add" onclick="addToCart(${p.id})">+ إضافة بالوحدة</button>
+                            </div>
                         </div>
                     </div>
                 `;
-                fragment.appendChild(card);
             });
-            list.appendChild(fragment);
         }
 
         function openGallery(index) {
@@ -1890,8 +1844,6 @@
             const prod = products.find(p => p.id === id);
             const qtyInput = parseInt(document.getElementById(`qty-${id}`).value) || 1;
 
-            if(qtyInput <= 0) return showToast('ادخل كمية صحيحة!', 'fa-triangle-exclamation');
-
             const item = cart.find(c => c.id === id);
             if(item) { 
                 item.qty += qtyInput; 
@@ -1899,7 +1851,6 @@
                 cart.push({...prod, qty: qtyInput}); 
             }
             document.getElementById('cartBadge').innerText = cart.reduce((s, i) => s + i.qty, 0);
-            showToast(`تمت إضافة (${prod.name}) إلى السلة`);
         }
 
         function openCart() {
@@ -1934,23 +1885,22 @@
             cart.splice(index, 1);
             document.getElementById('cartBadge').innerText = cart.reduce((s, i) => s + i.qty, 0);
             renderCartItems();
-            showToast('تم حذف المادة من السلة');
         }
 
         function closeCart() { document.getElementById('cartModal').style.display = 'none'; }
 
         function checkout() {
             const repName = (currentUser && currentUser.name) ? currentUser.name : 'غير محدد';
-            const pharmacy = document.getElementById('pharmacyNameInput').value.trim();
-            const phone = document.getElementById('pharmacyPhoneInput').value.trim();
+            const pharmacy = document.getElementById('pharmacyNameInput').value;
+            const phone = document.getElementById('pharmacyPhoneInput').value;
             const province = document.getElementById('provinceSelect').value;
             const warehouse = document.getElementById('warehouseSelect').value;
 
             if(!pharmacy || !province || !warehouse) {
-                showToast('تأكد من اختيار المحافظة، المذخر وإدخال اسم الصيدلية!', 'fa-triangle-exclamation');
+                alert('تنبيه: تأكد من اختيار المحافظة، المذخر وإدخال اسم الصيدلية!');
                 return;
             }
-            if(cart.length === 0) return showToast('السلة فارغة!', 'fa-shopping-cart');
+            if(cart.length === 0) return alert('السلة فارغة!');
 
             document.getElementById('invRep').innerText = repName;
             document.getElementById('invPharmacy').innerText = pharmacy;
@@ -2002,7 +1952,6 @@
             document.getElementById('invoiceModal').style.display = 'flex';
             cart = [];
             document.getElementById('cartBadge').innerText = 0;
-            showToast('تم إصدار وحفظ الفاتورة بنجاح!');
         }
 
         function directPrint() { window.print(); }
@@ -2019,7 +1968,7 @@
                 };
                 html2pdf().set(opt).from(element).save();
             } else {
-                showToast("جاري استخدام الطباعة المباشرة...", 'fa-print');
+                alert("جاري استخدام الطباعة المباشرة كبديل.");
                 directPrint();
             }
         }
@@ -2027,7 +1976,7 @@
         function sendWhatsApp() {
             if(!currentInvoiceData) return;
             let phone = currentInvoiceData.phone.replace(/[^0-9]/g, '');
-            if(!phone) return showToast('ادخل رقم الهاتف أولاً', 'fa-phone');
+            if(!phone) return alert('ادخل رقم الهاتف أولاً');
             if(phone.startsWith('0')) phone = '964' + phone.substring(1);
 
             let msg = `*فاتورة تجهيز - ${officeName}*\n`;
@@ -2049,7 +1998,6 @@
 
         function closeInvoice() { document.getElementById('invoiceModal').style.display = 'none'; }
 
-        // دالة تحسين ضغط الصورة وتخزينها خفيفة الوزن
         function compressImage(file, callback) {
             const reader = new FileReader();
             reader.onload = function(e) {
@@ -2076,7 +2024,6 @@
                 compressImage(input.files[0], function(base64Img) {
                     uploadedImageData = base64Img;
                     document.getElementById('fileNameDisplay').innerText = "تم رفع وتمييز الصورة بنجاح";
-                    showToast('تمت معالجة الصورة بنجاح');
                 });
             }
         }
@@ -2086,7 +2033,6 @@
                 compressImage(input.files[0], function(base64Img) {
                     editedImageData = base64Img;
                     document.getElementById('editFileNameDisplay').innerText = "تم تحديث صورة الدواء بنجاح";
-                    showToast('تمت معالجة الصورة الجديدة');
                 });
             }
         }
@@ -2100,7 +2046,7 @@
                 saveDataLocal();
                 renderAdminWarehouses();
                 loadWarehouses();
-                showToast(`تم حفظ المذخر ${name}`);
+                alert(`تم حفظ المذخر ${name}`);
                 document.getElementById('newWarehouseName').value = '';
             }
         }
@@ -2117,7 +2063,7 @@
             if(name && company && unitPrice) {
                 products.push({ id: Date.now(), name, company, unitName, unitPrice, expire, bonus, img });
                 saveDataLocal();
-                showToast('تمت إضافة الدواء بنجاح');
+                alert('تمت إضافة الدواء بنجاح');
                 initProvincesAndReps();
                 renderProducts(products);
                 renderAdminProducts();
@@ -2128,11 +2074,10 @@
                 uploadedImageData = '';
                 document.getElementById('fileNameDisplay').innerText = '';
             } else {
-                showToast('يرجى ملء البيانات الرئيسية للدواء', 'fa-triangle-exclamation');
+                alert('يرجى ملء البيانات الرئيسية للدواء');
             }
         }
 
-        // تشغيل التهيئة تلقائياً عند الفتح
         updateNetworkStatus();
         initProvincesAndReps();
         initFirebase();
